@@ -1,0 +1,93 @@
+window.device-menu {
+  border: none;
+  box-shadow: none;
+  background-color: #212223;
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #f1f1f1;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+window.device-menu grid {
+  margin-bottom: 8px;
+}
+window.device-menu icon {
+  font-size: 16px;
+}
+window.device-menu button {
+  background-color: #212223;
+  min-width: 32px;
+  min-height: 32px;
+  margin-left: 12px;
+  margin-right: 12px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding: 4px;
+}
+window.device-menu button:hover {
+  background-color: #444444;
+}
+window.device-menu .AudioSlider {
+  margin-left: 12px;
+  margin-right: 12px;
+  min-height: 32px;
+}
+window.device-menu .active {
+  color: #378DF7;
+}
+window.device-menu .merged {
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 0;
+}
+window.device-menu .merged:first-child {
+  margin-left: 12px;
+  border-bottom-left-radius: 8px;
+  border-top-left-radius: 8px;
+}
+window.device-menu .merged:last-child {
+  margin-right: 12px;
+  border-bottom-right-radius: 8px;
+  border-top-right-radius: 8px;
+  border-right: none;
+}
+
+window.Bar {
+  border: none;
+  box-shadow: none;
+  background-color: #212223;
+  color: #f1f1f1;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+window.Bar button {
+  all: unset;
+  background-color: transparent;
+}
+window.Bar button:hover label {
+  background-color: #444444;
+  border-color: #378DF7;
+}
+window.Bar button:active label {
+  background-color: #444444;
+}
+window.Bar label {
+  transition: 200ms;
+  padding: 0 8px;
+  margin: 2px;
+  border-radius: 8px;
+  border: 1pt solid transparent;
+}
+window.Bar icon {
+  margin: 0.3em;
+}
+window.Bar .Workspaces .focused label {
+  color: #378DF7;
+  border-color: #378DF7;
+}
+window.Bar .Battery label {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/*# sourceMappingURL=style.css.map */

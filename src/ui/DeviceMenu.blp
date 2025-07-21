@@ -1,0 +1,132 @@
+using Gtk 4.0;
+using Astal 4.0;
+
+template $DeviceMenu: Astal.Window {
+    styles [
+        "device-menu"
+    ]
+    Grid {
+        column-homogeneous: true;
+        width-request: 336;
+
+        Button close {
+            name: "close";
+            label: _("X");
+            clicked => $close_clicked();
+
+            layout {
+                row: 0;
+                column: 0;
+            }
+
+            hexpand: false;
+        }
+
+        Button logout {
+            name: "logout";
+            icon-name: "system-log-out-symbolic";
+            clicked => $logout_clicked();
+
+            layout {
+                row: 0;
+                column: 3;
+            }
+
+            hexpand: false;
+        }
+
+        Button reboot {
+            name: "reboot";
+            icon-name: "system-reboot-symbolic";
+            clicked => $reboot_clicked();
+
+            layout {
+                row: 0;
+                column: 4;
+            }
+
+            hexpand: false;
+        }
+
+        Button poweroff {
+            name: "poweroff";
+            icon-name: "system-shutdown-symbolic";
+            clicked => $poweroff_clicked();
+
+            layout {
+                row: 0;
+                column: 5;
+            }
+
+            hexpand: false;
+        }
+
+        Box {
+            orientation: horizontal;
+
+            layout {
+                row: 1;
+                column: 0;
+                column-span: 6;
+            }
+
+            Image {
+              icon-name: bind template.volume_icon;
+            }
+
+            Scale volume {
+                name: "volume";
+                orientation: horizontal;
+                width-request: 300;
+                change-value => $change_volume();
+
+                adjustment: Gtk.Adjustment {
+                    lower: 0;
+                    upper: 1;
+                    value: bind template.volume;
+                };
+            }
+        }
+
+        Box buttons {
+            orientation: vertical;
+
+            layout {
+                row: 2;
+                column: 0;
+                column-span: 6;
+            }
+
+            Box {
+                Button {
+                    icon-name: "bluetooth-active-symbolic";
+                    clicked => $bluetooth_toggle();
+
+                    styles [
+                        "merged"
+                    ]
+                }
+                Button {
+                    icon-name: "go-down-symbolic";
+                    clicked => $show_devices();
+
+                    styles [
+                        "merged"
+                    ]
+                }
+            }
+
+            Revealer bluetooth-devices {
+                reveal-child: false;
+
+                Box devices {
+                    orientation: vertical;
+
+                    Label {
+                        label: _("dev");
+                    }
+                }
+            }
+        }
+    }
+}

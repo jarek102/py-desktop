@@ -1,0 +1,128 @@
+@use "sass:color";
+
+$bg: #212223;
+$muted: #444444;
+$fg: #f1f1f1;
+$accent: #378DF7;
+$radius: 8px;
+
+window.device-menu {
+    border: none;
+    box-shadow: none;
+    background-color: $bg;//color.adjust($bg, $alpha: -0.5);
+    font-size: 1.1em;
+    font-weight: bold;
+    color: $fg;
+
+    
+    border-bottom-right-radius: $radius;
+    border-bottom-left-radius: $radius;
+
+    grid {
+        margin-bottom: 8px;
+    }
+
+    icon {
+        font-size: 16px;
+    }
+
+    button {
+        background-color: $bg;
+        min-width: 32px;
+        min-height: 32px;
+        margin-left: 12px;
+        margin-right: 12px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        padding: 4px;
+
+        &:hover {
+            background-color: $muted; //color.adjust($fg, $alpha: -0.84);
+        }
+    }
+
+    .AudioSlider {
+        margin-left: 12px;
+        margin-right: 12px;
+        min-height: 32px;
+    }
+
+    .active {
+        color: $accent;
+    }
+
+    .merged {
+        margin-left: 0;
+        margin-right: 0;
+        border-radius: 0;
+        // border-right: $accent solid 1px;
+    }
+
+    .merged:first-child {
+        margin-left: 12px;
+        border-bottom-left-radius: $radius;
+        border-top-left-radius: $radius;
+    }
+
+    .merged:last-child {
+        margin-right: 12px;
+        border-bottom-right-radius: $radius;
+        border-top-right-radius: $radius;
+        border-right: none;
+    }
+
+    // icon {
+    //     min-width: 48px;
+    //     min-height: 48px;
+
+    //     margin: 4px;
+    //     background-color: color.adjust($fg, $alpha: -0.8);
+    //     border-radius: 48px;
+    //     border: 1pt solid transparent;
+    // }
+}
+
+window.Bar {
+    border: none;
+    box-shadow: none;
+    background-color: $bg;//color.adjust($bg, $alpha: -0.5);
+    color: $fg;
+    font-size: 1.1em;
+    font-weight: bold;
+
+    button {
+        all: unset;
+        background-color: transparent;
+
+        &:hover label {
+            background-color: $muted; //color.adjust($fg, $alpha: -0.84);
+            border-color: $accent;//color.adjust($accent, $alpha: -0.8);
+        }
+
+        &:active label {
+            background-color: $muted;//color.adjust($fg, $alpha: -0.8)
+        }
+    }
+
+    label {
+        transition: 200ms;
+        padding: 0 8px;
+        margin: 2px;
+        border-radius: $radius;
+        border: 1pt solid transparent;
+    }
+
+    icon {
+        margin: .3em;
+    }
+
+    .Workspaces .focused label {
+        color: $accent;
+        border-color: $accent;
+    }
+
+    .Battery label {
+        padding-left: 0;
+        margin-left: 0;
+    }
+}
