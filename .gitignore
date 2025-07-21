@@ -1,0 +1,3 @@
+.buildconfig
+.vscode/launch.json
+src/ui/__pycache__/*
