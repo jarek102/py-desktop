@@ -1,5 +1,6 @@
 import math
 import pathlib
+from typing import Optional
 from gi.repository import (
     Astal,
     AstalIO,
@@ -16,6 +17,8 @@ from gi.repository import (
     AstalBluetooth,
 )
 
+from .WindowManager import WindowManager
+
 SYNC = GObject.BindingFlags.SYNC_CREATE
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
@@ -24,6 +27,8 @@ UI_FILE = BASE_DIR / 'Bar.ui'
 @Gtk.Template(filename=UI_FILE.as_posix())
 class Bar(Astal.Window):
     __gtype_name__ = "Bar"
+    
+    window_manager = None
 
     clock = GObject.Property(type=str)
     volume_icon = GObject.Property(type=str)
@@ -38,7 +43,7 @@ class Bar(Astal.Window):
     calendar = Gtk.Template.Child()
     traybox = Gtk.Template.Child()
 
-    def __init__(self,**kwargs):
+    def __init__(self,window_manager: Optional[WindowManager] = None,**kwargs) -> None:
         super().__init__(
             anchor=Astal.WindowAnchor.TOP
             | Astal.WindowAnchor.LEFT # pyright: ignore[reportOperatorIssue]
@@ -48,6 +53,8 @@ class Bar(Astal.Window):
             visible=True,
             **kwargs
         )
+        
+        self.window_manager = window_manager
 
         # clock
         timer = AstalIO.Time.interval(1000, self.set_clock)
@@ -164,3 +171,8 @@ class Bar(Astal.Window):
 
     def set_clock(self):
         self.clock = GLib.DateTime.new_now_local().format("%H:%M")
+
+    @Gtk.Template.Callback()
+    def menu_clicked(self, _) -> None:
+        if self.window_manager:
+            self.window_manager.toggle_menu(self.get_monitor())

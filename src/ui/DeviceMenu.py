@@ -45,7 +45,7 @@ class DeviceMenu(Astal.Window):
 
     @Gtk.Template.Callback()
     def close_clicked(self, _) -> None:
-        self.close()
+        self.hide()
 
     @Gtk.Template.Callback()
     def logout_clicked(self, _) -> None:

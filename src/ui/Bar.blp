@@ -27,41 +27,46 @@ template $Bar: Astal.Window {
             }
         };
 
-        end-widget: Box {
-            spacing: 4;
-
-            Image {
-                visible: bind template.bluetooth-visible;
-                icon-name: "bluetooth-symbolic";
-            }
-
-            Image {
-                icon-name: bind template.network-icon;
-            }
+        end-widget: Button {
+            
+            clicked => $menu_clicked();
 
             Box {
+                spacing: 4;
+
                 Image {
-                    icon-name: bind template.volume-icon;
+                    visible: bind template.bluetooth-visible;
+                    icon-name: "bluetooth-symbolic";
                 }
+
+                Image {
+                    icon-name: bind template.network-icon;
+                }
+
+                Box {
+                    Image {
+                        icon-name: bind template.volume-icon;
+                    }
+                }
+
+                Box {
+                    visible: bind template.battery-visible;
+
+                    Image {
+                        icon-name: bind template.power-profile-icon;
+                    }
+
+                    Image {
+                        icon-name: bind template.battery-icon;
+                    }
+
+                    Label {
+                        label: bind template.battery-label;
+                    }
+                }
+
+
             }
-
-            Box {
-                visible: bind template.battery-visible;
-
-                Image {
-                    icon-name: bind template.power-profile-icon;
-                }
-
-                Image {
-                    icon-name: bind template.battery-icon;
-                }
-
-                Label {
-                    label: bind template.battery-label;
-                }
-            }
-
-
         };
     }
 }
