@@ -1,4 +1,5 @@
 import pathlib
+import subprocess
 import gi
 import os
 
@@ -25,6 +26,8 @@ BIDI = GObject.BindingFlags.BIDIRECTIONAL
 class DeviceMenu(Astal.Window):
     __gtype_name__ = 'DeviceMenu'
     
+    brightness = GObject.Property(type=int)
+    
     volume = GObject.Property(type=float)
     volume_icon = GObject.Property(type=str)
 
@@ -37,6 +40,8 @@ class DeviceMenu(Astal.Window):
             | Astal.WindowAnchor.BOTTOM,
             exclusivity=Astal.Exclusivity.EXCLUSIVE,
             **kwargs)
+        
+#        self.brightness = 
         
         speaker = Wp.get_default().get_audio().get_default_speaker()
         speaker.bind_property("volume-icon", self, "volume-icon", SYNC)
@@ -62,6 +67,11 @@ class DeviceMenu(Astal.Window):
     @Gtk.Template.Callback()
     def change_volume(self, _scale, _type, value) -> None:
         Wp.get_default().get_default_speaker().set_volume(value)
+        
+    @Gtk.Template.Callback()
+    def change_brightness(self, _scale, _type, value) -> None:
+        for display in [1,2,3]:
+            subprocess.Popen(["ddcutil","-d",f"{display}","set","10",f"{int(value)}"])
         
     @Gtk.Template.Callback()
     def bluetooth_toggle(self, _scale, _type, value) -> None:

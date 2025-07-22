@@ -71,6 +71,35 @@ template $DeviceMenu: Astal.Window {
             }
 
             Image {
+              icon-name: "display-brightness-symbolic";
+            }
+
+            Scale brightness {
+                name: "brightness";
+                orientation: horizontal;
+                width-request: 300;
+                change-value => $change_brightness();
+                digits: 0;
+
+                adjustment: Gtk.Adjustment {
+                    lower: 0;
+                    upper: 100;
+                    step-increment: 10;
+                    value: bind template.brightness;
+                };
+            }
+        }
+
+        Box {
+            orientation: horizontal;
+
+            layout {
+                row: 2;
+                column: 0;
+                column-span: 6;
+            }
+
+            Image {
               icon-name: bind template.volume_icon;
             }
 
@@ -92,7 +121,7 @@ template $DeviceMenu: Astal.Window {
             orientation: vertical;
 
             layout {
-                row: 2;
+                row: 3;
                 column: 0;
                 column-span: 6;
             }
@@ -101,6 +130,7 @@ template $DeviceMenu: Astal.Window {
                 Button {
                     icon-name: "bluetooth-active-symbolic";
                     clicked => $bluetooth_toggle();
+                    hexpand: true;
 
                     styles [
                         "merged"
