@@ -175,4 +175,4 @@ class Bar(Astal.Window):
     @Gtk.Template.Callback()
     def menu_clicked(self, _) -> None:
         if self.window_manager:
-            self.window_manager.toggle_menu(self.get_monitor())
+            self.window_manager.toggle_device_menu(self.get_monitor())

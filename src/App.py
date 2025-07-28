@@ -27,7 +27,7 @@ class App(Astal.Application):
         for bar in self.bars.values():
             bar.present()
         
-    def toggle_menu(self, gdkmonitor=None):
+    def toggle_device_menu(self, gdkmonitor=None):
         if not self.system_menu:
             self.system_menu = DeviceMenu()
             self.add_window(self.system_menu)
