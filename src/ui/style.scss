@@ -1,10 +1,11 @@
 @use "sass:color";
 
-$bg: #212223;
+$bg: #222222;
 $muted: #444444;
 $fg: #f1f1f1;
 $accent: #378DF7;
 $radius: 8px;
+$outside-margin: 12px;
 
 window.device-menu {
     border: none;
@@ -26,12 +27,38 @@ window.device-menu {
         font-size: 16px;
     }
 
+    .item {
+        margin-left: $outside-margin;
+        margin-right: $outside-margin;
+        border-radius: $radius;
+
+        image {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        button {
+            margin: 4px;
+            border-radius: 16px;
+            min-width: 28px;
+            min-height: 28px;
+
+            image {
+                padding: 0px;
+            }
+        }
+
+        &:hover {
+            background-color: $muted; //color.adjust($fg, $alpha: -0.84);
+        }
+    }
+
     button {
         background-color: $bg;
         min-width: 32px;
         min-height: 32px;
-        margin-left: 12px;
-        margin-right: 12px;
+        margin-left: $outside-margin;
+        margin-right: $outside-margin;
         margin-top: 8px;
         margin-bottom: 8px;
         padding: 4px;
@@ -41,10 +68,9 @@ window.device-menu {
         }
     }
 
-    .AudioSlider {
-        margin-left: 12px;
-        margin-right: 12px;
-        min-height: 32px;
+    .slider {
+        padding-top: 4px;
+        padding-bottom: 4px; 
     }
 
     .active {
@@ -70,16 +96,6 @@ window.device-menu {
         border-top-right-radius: $radius;
         border-right: none;
     }
-
-    // icon {
-    //     min-width: 48px;
-    //     min-height: 48px;
-
-    //     margin: 4px;
-    //     background-color: color.adjust($fg, $alpha: -0.8);
-    //     border-radius: 48px;
-    //     border: 1pt solid transparent;
-    // }
 }
 
 window.Bar {

@@ -1,7 +1,7 @@
 window.device-menu {
   border: none;
   box-shadow: none;
-  background-color: #212223;
+  background-color: #222222;
   font-size: 1.1em;
   font-weight: bold;
   color: #f1f1f1;
@@ -14,8 +14,29 @@ window.device-menu grid {
 window.device-menu icon {
   font-size: 16px;
 }
+window.device-menu .item {
+  margin-left: 12px;
+  margin-right: 12px;
+  border-radius: 8px;
+}
+window.device-menu .item image {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+window.device-menu .item button {
+  margin: 4px;
+  border-radius: 16px;
+  min-width: 28px;
+  min-height: 28px;
+}
+window.device-menu .item button image {
+  padding: 0px;
+}
+window.device-menu .item:hover {
+  background-color: #444444;
+}
 window.device-menu button {
-  background-color: #212223;
+  background-color: #222222;
   min-width: 32px;
   min-height: 32px;
   margin-left: 12px;
@@ -27,10 +48,9 @@ window.device-menu button {
 window.device-menu button:hover {
   background-color: #444444;
 }
-window.device-menu .AudioSlider {
-  margin-left: 12px;
-  margin-right: 12px;
-  min-height: 32px;
+window.device-menu .slider {
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 window.device-menu .active {
   color: #378DF7;
@@ -55,7 +75,7 @@ window.device-menu .merged:last-child {
 window.Bar {
   border: none;
   box-shadow: none;
-  background-color: #212223;
+  background-color: #222222;
   color: #f1f1f1;
   font-size: 1.1em;
   font-weight: bold;
