@@ -1,0 +1,31 @@
+using Gtk 4.0;
+
+template $BluetoothDevice: Box {
+  hexpand: true;
+
+  styles [
+    "item",
+  ]
+
+  Image {
+    icon-name: bind template.icon;
+  }
+
+  Label {
+    label: bind template.name;
+  }
+
+  Box {
+    hexpand: true;
+  }
+
+  Button {
+    icon-name: bind template.favorite-icon;
+    clicked => $favorite();
+  }
+
+  Button {
+    icon-name: "user-trash-symbolic";
+    clicked => $unpair();
+  }
+}

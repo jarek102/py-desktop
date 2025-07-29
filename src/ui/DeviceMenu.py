@@ -14,6 +14,7 @@ from gi.repository import (
 )
 
 from ui.BrightnessService import BrightnessService
+from ui.BluetoothDevice import BluetoothDevice
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
 UI_FILE = BASE_DIR / 'DeviceMenu.ui'
@@ -30,6 +31,7 @@ class DeviceMenu(Astal.Window):
     volume_icon = GObject.Property(type=str)
 
     bluetooth_devices_revealer = Gtk.Template.Child(name='bluetooth-devices')
+    devices = Gtk.Template.Child()
 
     def __init__(self, **kwargs) -> None:
         super().__init__(
@@ -45,6 +47,10 @@ class DeviceMenu(Astal.Window):
         speaker.bind_property("volume-icon", self, "volume-icon", SYNC)
         speaker.bind_property("volume", self, "volume", SYNC)
         self.connect('notify::volume_icon', lambda self: print(self.volume_icon))
+        
+        
+        for device in Bluetooth.get_default().get_devices():
+            self.devices.append(BluetoothDevice(device))
 
     @Gtk.Template.Callback()
     def close_clicked(self, _) -> None:

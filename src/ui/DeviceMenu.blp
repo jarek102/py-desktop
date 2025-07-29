@@ -64,6 +64,10 @@ template $DeviceMenu: Astal.Window {
         Box {
             orientation: horizontal;
 
+            styles [
+                "slider","item"
+            ]
+
             layout {
                 row: 1;
                 column: 0;
@@ -77,7 +81,7 @@ template $DeviceMenu: Astal.Window {
             Scale brightness {
                 name: "brightness";
                 orientation: horizontal;
-                width-request: 300;
+                hexpand: true;
                 change-value => $change_brightness();
                 digits: 0;
 
@@ -93,6 +97,10 @@ template $DeviceMenu: Astal.Window {
         Box {
             orientation: horizontal;
 
+            styles [
+                "slider","item"
+            ]
+
             layout {
                 row: 2;
                 column: 0;
@@ -106,7 +114,7 @@ template $DeviceMenu: Astal.Window {
             Scale volume {
                 name: "volume";
                 orientation: horizontal;
-                width-request: 300;
+                hexpand: true;
                 change-value => $change_volume();
 
                 adjustment: Gtk.Adjustment {
@@ -151,10 +159,6 @@ template $DeviceMenu: Astal.Window {
 
                 Box devices {
                     orientation: vertical;
-
-                    Label {
-                        label: _("dev");
-                    }
                 }
             }
         }
