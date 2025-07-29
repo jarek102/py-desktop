@@ -2,10 +2,8 @@ import gi
 import pathlib
 
 from gi.repository import (
-    Gio, 
     Gtk,
     GObject,
-    Astal,
     AstalBluetooth as Bluetooth,
 )
 from gi.repository.Gdk import Cursor
@@ -25,7 +23,7 @@ class BluetoothDevice(Gtk.Box):
     name = GObject.Property(type=str)
     icon = GObject.Property(type=str)
     
-    favorite = GObject.Property(type=bool, default=False, flags=RW)
+    favorite = GObject.Property(type=bool, default=False)
     favorite_icon = GObject.Property(type=str, default="star-new-symbolic")
     
     def __init__(self,device:Bluetooth.Device,favorite = False,**kwargs):
