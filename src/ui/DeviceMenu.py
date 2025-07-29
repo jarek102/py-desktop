@@ -9,12 +9,11 @@ from gi.repository import (
     GObject,
     Astal,
     AstalWp as Wp,
-    AstalBluetooth as Bluetooth,
     AstalHyprland as Hyprland,
 )
 
 from ui.BrightnessService import BrightnessService
-from ui.BluetoothDevice import BluetoothDevice
+from ui.BluetoothMenu import BluetoothMenu
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
 UI_FILE = BASE_DIR / 'DeviceMenu.ui'
@@ -30,9 +29,6 @@ class DeviceMenu(Astal.Window):
     volume = GObject.Property(type=float)
     volume_icon = GObject.Property(type=str)
 
-    bluetooth_devices_revealer = Gtk.Template.Child(name='bluetooth-devices')
-    devices = Gtk.Template.Child()
-
     def __init__(self, **kwargs) -> None:
         super().__init__(
             anchor=Astal.WindowAnchor.RIGHT
@@ -47,10 +43,6 @@ class DeviceMenu(Astal.Window):
         speaker.bind_property("volume-icon", self, "volume-icon", SYNC)
         speaker.bind_property("volume", self, "volume", SYNC)
         self.connect('notify::volume_icon', lambda self: print(self.volume_icon))
-        
-        
-        for device in Bluetooth.get_default().get_devices():
-            self.devices.append(BluetoothDevice(device))
 
     @Gtk.Template.Callback()
     def close_clicked(self, _) -> None:
@@ -76,16 +68,3 @@ class DeviceMenu(Astal.Window):
     def change_brightness(self, scale, _type, value) -> None:
         value = int(round(value,-1))
         self.brightness_service.brightness = value
-        
-    @Gtk.Template.Callback()
-    def bluetooth_toggle(self, _scale, _type, value) -> None:
-        Bluetooth.get_default().toggle()
-        
-    @Gtk.Template.Callback()
-    def show_devices(self, button) -> None:
-        reveal = self.bluetooth_devices_revealer.get_reveal_child()
-        if (reveal):
-            button.set_icon_name("go-down-symbolic")
-        else:
-            button.set_icon_name("go-up-symbolic")
-        self.bluetooth_devices_revealer.set_reveal_child(not reveal)

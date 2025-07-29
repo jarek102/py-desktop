@@ -125,41 +125,11 @@ template $DeviceMenu: Astal.Window {
             }
         }
 
-        Box buttons {
-            orientation: vertical;
-
+        $BluetoothMenu {
             layout {
                 row: 3;
                 column: 0;
                 column-span: 6;
-            }
-
-            Box {
-                Button {
-                    icon-name: "bluetooth-active-symbolic";
-                    clicked => $bluetooth_toggle();
-                    hexpand: true;
-
-                    styles [
-                        "merged"
-                    ]
-                }
-                Button {
-                    icon-name: "go-down-symbolic";
-                    clicked => $show_devices();
-
-                    styles [
-                        "merged"
-                    ]
-                }
-            }
-
-            Revealer bluetooth-devices {
-                reveal-child: false;
-
-                Box devices {
-                    orientation: vertical;
-                }
             }
         }
     }

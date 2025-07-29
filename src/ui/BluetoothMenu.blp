@@ -1,0 +1,33 @@
+using Gtk 4.0;
+
+template $BluetoothMenu:Box {
+    orientation: vertical;
+
+    Box {
+        Button {
+            icon-name: "bluetooth-active-symbolic";
+            clicked => $bluetooth_toggle();
+            hexpand: true;
+
+            styles [
+                "merged"
+            ]
+        }
+        Button {
+            icon-name: "go-down-symbolic";
+            clicked => $show_devices();
+
+            styles [
+                "merged"
+            ]
+        }
+    }
+
+    Revealer bluetooth-devices {
+        reveal-child: false;
+
+        Box devices {
+            orientation: vertical;
+        }
+    }
+}

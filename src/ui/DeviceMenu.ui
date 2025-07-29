@@ -133,46 +133,12 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
           </object>
         </child>
         <child>
-          <object class="GtkBox" id="buttons">
-            <property name="orientation">1</property>
+          <object class="BluetoothMenu">
             <layout>
               <property name="row">3</property>
               <property name="column">0</property>
               <property name="column-span">6</property>
             </layout>
-            <child>
-              <object class="GtkBox">
-                <child>
-                  <object class="GtkButton">
-                    <property name="icon-name">bluetooth-active-symbolic</property>
-                    <signal name="clicked" handler="bluetooth_toggle"/>
-                    <property name="hexpand">true</property>
-                    <style>
-                      <class name="merged"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton">
-                    <property name="icon-name">go-down-symbolic</property>
-                    <signal name="clicked" handler="show_devices"/>
-                    <style>
-                      <class name="merged"/>
-                    </style>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkRevealer" id="bluetooth-devices">
-                <property name="reveal-child">false</property>
-                <child>
-                  <object class="GtkBox" id="devices">
-                    <property name="orientation">1</property>
-                  </object>
-                </child>
-              </object>
-            </child>
           </object>
         </child>
       </object>
