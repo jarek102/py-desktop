@@ -29,7 +29,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
     <child>
       <object class="GtkButton">
         <property name="icon-name" bind-source="BluetoothDevice" bind-property="favorite-icon" bind-flags="sync-create"/>
-        <signal name="clicked" handler="favorite"/>
+        <signal name="clicked" handler="make_favorite"/>
       </object>
     </child>
     <child>

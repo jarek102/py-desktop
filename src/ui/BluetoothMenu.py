@@ -6,7 +6,7 @@ from gi.repository import (
     GObject,
     AstalBluetooth as Bluetooth,
 )
-from gi.repository.Gdk import Cursor
+
 from ui.BluetoothDevice import BluetoothDevice
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
@@ -21,24 +21,56 @@ RW = GObject.ParamFlags.READWRITE
 class BluetoothMenu(Gtk.Box):
     __gtype_name__ = 'BluetoothMenu'
     
-    bluetooth_devices_revealer = Gtk.Template.Child(name='bluetooth-devices')
+    revealer = Gtk.Template.Child()
     devices = Gtk.Template.Child()
+    toggle = Gtk.Template.Child()
+    buttons = Gtk.Template.Child()
+    
+    favorites = {}
     
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         
-        for device in Bluetooth.get_default().get_devices():
-            self.devices.append(BluetoothDevice(device))
+        self.bluetooth = Bluetooth.get_default()
+        
+        for device in self.bluetooth.get_devices():
+            bt_device = BluetoothDevice(device)
+            self.devices.append(bt_device)
+            bt_device.connect("notify::favorite",self.make_favorite)
+            
+        self.bluetooth_active()
+        self.bluetooth.connect("notify::is-powered",self.bluetooth_active)
+    
+    def update_active(self,widget,state):
+        if state:
+            widget.get_style_context().add_class("active")
+        else:
+            widget.get_style_context().remove_class("active")
+
+    def bluetooth_active(self, _obj = None, _data = None):
+        self.update_active(self.toggle,self.bluetooth.props.is_powered)
+            
+    def make_favorite(self, bt_device : BluetoothDevice, _data = None):
+        if bt_device.favorite:
+            button = Gtk.Button(icon_name=bt_device.icon)
+            button.get_style_context().add_class("merged")
+            bt_device.device.connect("notify::connected",lambda device,_data: self.update_active(button,device.props.connected))
+            self.update_active(button,bt_device.device.props.connected)
+            self.favorites[bt_device] = button
+            self.buttons.insert_child_after(button,self.toggle)
+        else:
+            self.buttons.remove(self.favorites[bt_device])
+            self.favorites.pop(bt_device)
             
     @Gtk.Template.Callback()
     def bluetooth_toggle(self, _scale, _type, value) -> None:
-        Bluetooth.get_default().toggle()
+        self.bluetooth.toggle()
         
     @Gtk.Template.Callback()
     def show_devices(self, button) -> None:
-        reveal = self.bluetooth_devices_revealer.get_reveal_child()
+        reveal = self.revealer.get_reveal_child()
         if (reveal):
             button.set_icon_name("go-down-symbolic")
         else:
             button.set_icon_name("go-up-symbolic")
-        self.bluetooth_devices_revealer.set_reveal_child(not reveal)
+        self.revealer.set_reveal_child(not reveal)

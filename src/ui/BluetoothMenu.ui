@@ -9,9 +9,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
   <template class="BluetoothMenu" parent="GtkBox">
     <property name="orientation">1</property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="buttons">
         <child>
-          <object class="GtkButton">
+          <object class="GtkButton" id="toggle">
             <property name="icon-name">bluetooth-active-symbolic</property>
             <signal name="clicked" handler="bluetooth_toggle"/>
             <property name="hexpand">true</property>
@@ -32,7 +32,7 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
       </object>
     </child>
     <child>
-      <object class="GtkRevealer" id="bluetooth-devices">
+      <object class="GtkRevealer" id="revealer">
         <property name="reveal-child">false</property>
         <child>
           <object class="GtkBox" id="devices">

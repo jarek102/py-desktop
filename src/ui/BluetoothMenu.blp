@@ -3,8 +3,8 @@ using Gtk 4.0;
 template $BluetoothMenu:Box {
     orientation: vertical;
 
-    Box {
-        Button {
+    Box buttons {
+        Button toggle {
             icon-name: "bluetooth-active-symbolic";
             clicked => $bluetooth_toggle();
             hexpand: true;
@@ -23,7 +23,7 @@ template $BluetoothMenu:Box {
         }
     }
 
-    Revealer bluetooth-devices {
+    Revealer revealer {
         reveal-child: false;
 
         Box devices {

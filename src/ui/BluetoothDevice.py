@@ -6,7 +6,6 @@ from gi.repository import (
     GObject,
     AstalBluetooth as Bluetooth,
 )
-from gi.repository.Gdk import Cursor
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
 UI_FILE = BASE_DIR / 'BluetoothDevice.ui'
@@ -22,13 +21,13 @@ class BluetoothDevice(Gtk.Box):
     
     name = GObject.Property(type=str)
     icon = GObject.Property(type=str)
+    device = GObject.Property(type=Bluetooth.Device)
     
     favorite = GObject.Property(type=bool, default=False)
     favorite_icon = GObject.Property(type=str, default="star-new-symbolic")
     
     def __init__(self,device:Bluetooth.Device,favorite = False,**kwargs):
-        super().__init__(**kwargs)
-        
+        super().__init__(**kwargs)        
         self.device = device
         device.bind_property("alias",self,"name",SYNC)
         device.bind_property("icon",self,"icon",SYNC , lambda _,icon : icon + "-symbolic")
@@ -47,7 +46,7 @@ class BluetoothDevice(Gtk.Box):
         self.click.connect("released",self.device_clicked)
         
     @Gtk.Template.Callback()
-    def favorite(self, _) -> None:
+    def make_favorite(self, _) -> None:
         self.favorite = not self.favorite
         if self.favorite:
             self.favorite_icon = "starred-symbolic"
