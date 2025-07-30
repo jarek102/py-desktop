@@ -5,6 +5,7 @@ $muted: #444444;
 $fg: #f1f1f1;
 $accent: #378DF7;
 $radius: 8px;
+$radius-bar: 4px;
 $outside-margin: 12px;
 
 window.device-menu {
@@ -98,7 +99,7 @@ window.device-menu {
     }
 }
 
-window.Bar {
+window.bar {
     border: none;
     box-shadow: none;
     background-color: $bg;//color.adjust($bg, $alpha: -0.5);
@@ -107,38 +108,16 @@ window.Bar {
     font-weight: bold;
 
     button {
-        all: unset;
-        background-color: transparent;
+        background-color: $bg;
+        border-radius: $radius-bar;
+        padding: 0px;
+        min-height: 24px;
+        min-width: 24px;
+        margin-left: 2px;
+        margin-right: 2px;
 
-        &:hover label {
+        &:hover {
             background-color: $muted; //color.adjust($fg, $alpha: -0.84);
-            border-color: $accent;//color.adjust($accent, $alpha: -0.8);
         }
-
-        &:active label {
-            background-color: $muted;//color.adjust($fg, $alpha: -0.8)
-        }
-    }
-
-    label {
-        transition: 200ms;
-        padding: 0 8px;
-        margin: 2px;
-        border-radius: $radius;
-        border: 1pt solid transparent;
-    }
-
-    icon {
-        margin: .3em;
-    }
-
-    .Workspaces .focused label {
-        color: $accent;
-        border-color: $accent;
-    }
-
-    .Battery label {
-        padding-left: 0;
-        margin-left: 0;
     }
 }

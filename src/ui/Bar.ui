@@ -7,6 +7,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="Bar" parent="AstalWindow">
+    <style>
+      <class name="bar"/>
+    </style>
     <child>
       <object class="GtkCenterBox" id="centerbox">
         <property name="start-widget">

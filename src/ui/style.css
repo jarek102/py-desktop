@@ -72,7 +72,7 @@ window.device-menu .merged:last-child {
   border-right: none;
 }
 
-window.Bar {
+window.bar {
   border: none;
   box-shadow: none;
   background-color: #222222;
@@ -80,34 +80,17 @@ window.Bar {
   font-size: 1.1em;
   font-weight: bold;
 }
-window.Bar button {
-  all: unset;
-  background-color: transparent;
+window.bar button {
+  background-color: #222222;
+  border-radius: 4px;
+  padding: 0px;
+  min-height: 24px;
+  min-width: 24px;
+  margin-left: 2px;
+  margin-right: 2px;
 }
-window.Bar button:hover label {
+window.bar button:hover {
   background-color: #444444;
-  border-color: #378DF7;
-}
-window.Bar button:active label {
-  background-color: #444444;
-}
-window.Bar label {
-  transition: 200ms;
-  padding: 0 8px;
-  margin: 2px;
-  border-radius: 8px;
-  border: 1pt solid transparent;
-}
-window.Bar icon {
-  margin: 0.3em;
-}
-window.Bar .Workspaces .focused label {
-  color: #378DF7;
-  border-color: #378DF7;
-}
-window.Bar .Battery label {
-  padding-left: 0;
-  margin-left: 0;
 }
 
 /*# sourceMappingURL=style.css.map */

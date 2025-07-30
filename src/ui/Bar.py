@@ -49,8 +49,6 @@ class Bar(Astal.Window):
             | Astal.WindowAnchor.LEFT # pyright: ignore[reportOperatorIssue]
             | Astal.WindowAnchor.RIGHT,
             exclusivity=Astal.Exclusivity.EXCLUSIVE,
-            css_classes=["Bar"],
-            visible=True,
             **kwargs
         )
         
