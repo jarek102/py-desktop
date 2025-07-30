@@ -27,6 +27,7 @@ class BluetoothMenu(Gtk.Box):
     buttons = Gtk.Template.Child()
     
     favorites = {}
+    favorites_store = {"80:C3:BA:46:EF:9A"}
     
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
@@ -37,6 +38,9 @@ class BluetoothMenu(Gtk.Box):
             bt_device = BluetoothDevice(device)
             self.devices.append(bt_device)
             bt_device.connect("notify::favorite",self.make_favorite)
+            
+            if bt_device.device.props.address in self.favorites_store:
+                bt_device.favorite = True
             
         self.bluetooth_active()
         self.bluetooth.connect("notify::is-powered",self.bluetooth_active)
@@ -54,6 +58,14 @@ class BluetoothMenu(Gtk.Box):
         if bt_device.favorite:
             button = Gtk.Button(icon_name=bt_device.icon)
             button.get_style_context().add_class("merged")
+            
+            def toggle_connected():
+                if bt_device.device.props.connected:
+                    bt_device.device.disconnect_device()
+                else:
+                    bt_device.device.connect_device()
+            
+            button.connect("clicked",lambda _button: toggle_connected())
             bt_device.device.connect("notify::connected",lambda device,_data: self.update_active(button,device.props.connected))
             self.update_active(button,bt_device.device.props.connected)
             self.favorites[bt_device] = button
