@@ -63,7 +63,7 @@ class BluetoothDevice(Gtk.Box):
         else:
             self.get_style_context().remove_class("active")
 
-    def device_clicked(self, _count, _x, _y, _) -> None:
+    def device_clicked(self, _count = None, _x = None, _y = None, _ = None) -> None:
         if self.device.props.connected:
             self.device.disconnect_device()
         else:

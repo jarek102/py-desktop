@@ -58,14 +58,7 @@ class BluetoothMenu(Gtk.Box):
         if bt_device.favorite:
             button = Gtk.Button(icon_name=bt_device.icon)
             button.get_style_context().add_class("merged")
-            
-            def toggle_connected():
-                if bt_device.device.props.connected:
-                    bt_device.device.disconnect_device()
-                else:
-                    bt_device.device.connect_device()
-            
-            button.connect("clicked",lambda _button: toggle_connected())
+            button.connect("clicked",lambda _button: bt_device.device_clicked())
             bt_device.device.connect("notify::connected",lambda device,_data: self.update_active(button,device.props.connected))
             self.update_active(button,bt_device.device.props.connected)
             self.favorites[bt_device] = button
