@@ -1,9 +1,5 @@
 import asyncio
-from optparse import Option
-from os import read
 import re
-from sys import stdout
-from gi.events import GLibEventLoopPolicy
 from gi.repository import GObject
 
 class BrightnessService(GObject.Object):
