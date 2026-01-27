@@ -7,7 +7,7 @@ template $BrightnessMenu : Box {
         styles ["linked"]
 
         Button icon {
-            icon-name: "display-brightness-symbolic";
+            icon-name: bind template.icon_name;
             sensitive: false;
         }
 
@@ -21,7 +21,7 @@ template $BrightnessMenu : Box {
                 upper: 100;
                 step-increment: 10;
                 page-increment: 10;
-                value: bind template.brightness bidirectional;
+                value: bind template.value bidirectional;
             };
 
             marks [
@@ -48,7 +48,7 @@ template $BrightnessMenu : Box {
     Revealer revealer {
         reveal-child: false;
         
-        Box monitor_list {
+        Box device_list {
             orientation: vertical;
         }
     }

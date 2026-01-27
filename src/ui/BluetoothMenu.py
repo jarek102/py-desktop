@@ -22,7 +22,8 @@ class BluetoothMenu(Gtk.Box):
     revealer = Gtk.Template.Child()
     devices = Gtk.Template.Child()
     toggle = Gtk.Template.Child()
-    buttons = Gtk.Template.Child()
+    header = Gtk.Template.Child()
+    expand = Gtk.Template.Child()
     
     favorites = {}
     
@@ -62,24 +63,24 @@ class BluetoothMenu(Gtk.Box):
             bt_device.device.connect("notify::connected",lambda device,_data: self.update_active(button,device.props.connected))
             self.update_active(button,bt_device.device.props.connected)
             self.favorites[bt_device] = button
-            self.buttons.insert_child_after(button,self.toggle)
+            self.header.insert_child_after(button,self.toggle)
             self.favorites_store.add(address)
         else:
-            self.buttons.remove(self.favorites[bt_device])
+            self.header.remove(self.favorites[bt_device])
             self.favorites.pop(bt_device)
             if address in self.favorites_store:
                 self.favorites_store.remove(address)
         self.settings.set_strv("bluetooth-favorites", list(self.favorites_store))
             
     @Gtk.Template.Callback()
-    def bluetooth_toggle(self, _scale, _type, value) -> None:
+    def bluetooth_toggle(self, *args) -> None:
         self.bluetooth.toggle()
         
     @Gtk.Template.Callback()
-    def show_devices(self, button) -> None:
+    def toggle_reveal(self, *args) -> None:
         reveal = self.revealer.get_reveal_child()
-        if (reveal):
-            button.set_icon_name("go-down-symbolic")
+        if reveal:
+            self.expand.set_icon_name("go-down-symbolic")
         else:
-            button.set_icon_name("go-up-symbolic")
+            self.expand.set_icon_name("go-up-symbolic")
         self.revealer.set_reveal_child(not reveal)

@@ -4,6 +4,7 @@ from ui.AudioItem import AudioItem
 from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
+BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
 @Blueprint("VolumeMenu.blp")
 class VolumeMenu(Gtk.Box):
@@ -12,9 +13,11 @@ class VolumeMenu(Gtk.Box):
     revealer = Gtk.Template.Child()
     device_list = Gtk.Template.Child()
     expand = Gtk.Template.Child()
+    slider = Gtk.Template.Child()
+    icon = Gtk.Template.Child()
     
-    icon = GObject.Property(type=str)
-    volume = GObject.Property(type=float)
+    icon_name = GObject.Property(type=str)
+    value = GObject.Property(type=float)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -50,8 +53,8 @@ class VolumeMenu(Gtk.Box):
             
         if self.endpoint:
             self._bindings = [
-                self.endpoint.bind_property("volume-icon", self, "icon", SYNC),
-                self.endpoint.bind_property("volume", self, "volume", GObject.BindingFlags.BIDIRECTIONAL | SYNC)
+                self.endpoint.bind_property("volume-icon", self, "icon_name", SYNC),
+                self.endpoint.bind_property("volume", self, "value", BIDI | SYNC)
             ]
 
     def on_default_changed(self, *args):

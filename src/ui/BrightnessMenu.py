@@ -12,28 +12,32 @@ class BrightnessMenu(Gtk.Box):
     __gtype_name__ = 'BrightnessMenu'
     
     revealer = Gtk.Template.Child()
-    monitor_list = Gtk.Template.Child()
+    device_list = Gtk.Template.Child()
     expand = Gtk.Template.Child()
+    slider = Gtk.Template.Child()
+    icon = Gtk.Template.Child()
     
-    brightness = GObject.Property(type=int)
+    icon_name = GObject.Property(type=str)
+    value = GObject.Property(type=float)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.service = BrightnessService()
         
+        self.icon.set_sensitive(False)
+        self.icon_name = "display-brightness-symbolic"
+        
         # Bind global brightness
-        self.service.bind_property("brightness", self, "brightness", BIDI | SYNC)
+        self.service.bind_property("brightness", self, "value", BIDI | SYNC)
         
         # Wait for initialization to populate list
-        # We can check periodically or just wait for the service to be ready if it exposed a signal
-        # For now, we'll hook into the initialization task if possible, or just poll
         if self.service.initialization_task:
             self.service.initialization_task.add_done_callback(self.on_initialized)
 
     def on_initialized(self, task):
         for monitor in self.service.monitors:
             item = BrightnessItem(monitor)
-            self.monitor_list.append(item)
+            self.device_list.append(item)
 
     @Gtk.Template.Callback()
     def toggle_reveal(self, *args):

@@ -7,7 +7,7 @@ template $VolumeMenu : Box {
         styles ["linked"]
 
         Button icon {
-            icon-name: bind template.icon;
+            icon-name: bind template.icon_name;
             clicked => $toggle_mute();
         }
 
@@ -18,7 +18,7 @@ template $VolumeMenu : Box {
             adjustment: Adjustment {
                 lower: 0;
                 upper: 1.0;
-                value: bind template.volume bidirectional;
+                value: bind template.value bidirectional;
             };
         }
 

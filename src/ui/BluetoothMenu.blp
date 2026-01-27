@@ -3,7 +3,7 @@ using Gtk 4.0;
 template $BluetoothMenu:Box {
     orientation: vertical;
 
-    Box buttons {
+    Box header {
         styles ["linked"]
 
         Button toggle {
@@ -11,9 +11,9 @@ template $BluetoothMenu:Box {
             clicked => $bluetooth_toggle();
             hexpand: true;
         }
-        Button {
+        Button expand {
             icon-name: "go-down-symbolic";
-            clicked => $show_devices();
+            clicked => $toggle_reveal();
         }
     }
 
