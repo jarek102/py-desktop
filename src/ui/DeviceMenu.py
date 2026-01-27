@@ -9,7 +9,8 @@ from gi.repository import (
     AstalHyprland as Hyprland,
 )
 
-from services.BrightnessService import BrightnessService
+from ui.BrightnessMenu import BrightnessMenu
+from ui.VolumeMenu import VolumeMenu
 from ui.BluetoothMenu import BluetoothMenu
 from ui.PopupWindow import PopupWindow
 from utils import Blueprint
@@ -21,25 +22,15 @@ BIDI = GObject.BindingFlags.BIDIRECTIONAL
 class DeviceMenu(Astal.Window, PopupWindow):
     __gtype_name__ = 'DeviceMenu'
     
-    brightness_scale = Gtk.Template.Child()
-    brightness = GObject.Property(type=int)
-    volume = GObject.Property(type=float)
-    volume_icon = GObject.Property(type=str)
+    audio_menu = Gtk.Template.Child()
+    mic_menu = Gtk.Template.Child()
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.setup_popup()
         
-        self.brightness_service = BrightnessService()
-        self.brightness_service.bind_property("brightness",self,"brightness", SYNC)
-        
-        speaker = Wp.get_default().get_default_speaker()
-        speaker.bind_property("volume-icon", self, "volume-icon", SYNC)
-        speaker.bind_property("volume", self, "volume", SYNC)
-
-    @Gtk.Template.Callback()
-    def close_clicked(self, _) -> None:
-        self.hide()
+        self.audio_menu.setup("speaker")
+        self.mic_menu.setup("microphone")
 
     @Gtk.Template.Callback()
     def logout_clicked(self, _) -> None:
@@ -52,14 +43,3 @@ class DeviceMenu(Astal.Window, PopupWindow):
     @Gtk.Template.Callback()
     def poweroff_clicked(self, _) -> None:
         subprocess.Popen(["systemctl", "poweroff"])
-        
-    @Gtk.Template.Callback()
-    def change_volume(self, _scale, _type, value) -> None:
-        Wp.get_default().get_default_speaker().set_volume(value)
-        
-    @Gtk.Template.Callback()
-    def change_brightness(self, scale, _type, value) -> bool:
-        snapped_value = int(round(value / 10) * 10)
-        self.brightness_service.brightness = snapped_value
-        scale.set_value(snapped_value)
-        return True

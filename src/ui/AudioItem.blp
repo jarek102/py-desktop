@@ -1,0 +1,26 @@
+using Gtk 4.0;
+
+template $AudioItem : Button {
+    styles ["item"]
+    
+    Box {
+        spacing: 12;
+        
+        Image icon {
+            icon-name: bind template.icon;
+        }
+        
+        Label {
+            label: bind template.name;
+            hexpand: true;
+            halign: start;
+            ellipsize: end;
+            max-width-chars: 24;
+        }
+        
+        Image check {
+            icon-name: "object-select-symbolic";
+            visible: bind template.is_default;
+        }
+    }
+}

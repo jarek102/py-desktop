@@ -11,12 +11,19 @@ except OSError:
 
 import versions
 import asyncio
-from gi.events import GLibEventLoopPolicy
+from gi.repository import GLib
 
 from App import App
 
+def loop_step(loop):
+    loop.call_soon(loop.stop)
+    loop.run_forever()
+    return True
+
 if __name__ == "__main__":
-    # TODO: GLibEventLoopPolicy is deprecated. Replace with manual asyncio loop integration.
-    asyncio.set_event_loop_policy(GLibEventLoopPolicy())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    GLib.timeout_add(10, loop_step, loop)
+
     app = App()
-    app.run(None)
+    sys.exit(app.run(None))

@@ -10,19 +10,6 @@ template $DeviceMenu: Astal.Window {
         column-homogeneous: true;
         width-request: 336;
 
-        Button close {
-            name: "close";
-            label: _("X");
-            clicked => $close_clicked();
-
-            layout {
-                row: 0;
-                column: 0;
-            }
-
-            hexpand: false;
-        }
-
         Button logout {
             name: "logout";
             icon-name: "system-log-out-symbolic";
@@ -62,87 +49,33 @@ template $DeviceMenu: Astal.Window {
             hexpand: false;
         }
 
-        Box {
-            orientation: horizontal;
-
-            styles [
-                "slider","item"
-            ]
-
+        $BrightnessMenu {
             layout {
                 row: 1;
                 column: 0;
                 column-span: 6;
             }
-
-            Image {
-              icon-name: "display-brightness-symbolic";
-            }
-
-            Scale brightness_scale {
-                name: "brightness_scale";
-                orientation: horizontal;
-                hexpand: true;
-                change-value => $change_brightness();
-                digits: 0;
-
-                marks [
-                    mark (0 , bottom),
-                    mark (10, bottom),
-                    mark (20, bottom),
-                    mark (30, bottom),
-                    mark (40, bottom),
-                    mark (50, bottom),
-                    mark (60, bottom),
-                    mark (70, bottom),
-                    mark (80, bottom),
-                    mark (90, bottom),
-                    mark (100, bottom)
-                ]
-
-                adjustment: Gtk.Adjustment {
-                    lower: 0;
-                    upper: 100;
-                    step-increment: 10;
-                    value: bind template.brightness;
-                };
-            }
         }
 
-        Box {
-            orientation: horizontal;
-
-            styles [
-                "slider","item"
-            ]
-
+        $VolumeMenu audio_menu {
             layout {
                 row: 2;
                 column: 0;
                 column-span: 6;
             }
+        }
 
-            Image {
-              icon-name: bind template.volume_icon;
-            }
-
-            Scale volume {
-                name: "volume";
-                orientation: horizontal;
-                hexpand: true;
-                change-value => $change_volume();
-
-                adjustment: Gtk.Adjustment {
-                    lower: 0;
-                    upper: 1;
-                    value: bind template.volume;
-                };
+        $VolumeMenu mic_menu {
+            layout {
+                row: 3;
+                column: 0;
+                column-span: 6;
             }
         }
 
         $BluetoothMenu {
             layout {
-                row: 3;
+                row: 4;
                 column: 0;
                 column-span: 6;
             }

@@ -1,0 +1,53 @@
+using Gtk 4.0;
+
+template $BrightnessItem : Box {
+    styles ["item"]
+    spacing: 12;
+
+    Image {
+        icon-name: "display-symbolic";
+        valign: center;
+    }
+
+    Box {
+        orientation: vertical;
+        hexpand: true;
+        valign: center;
+
+        Label {
+            label: bind template.name;
+            halign: start;
+            ellipsize: end;
+            max-width-chars: 20;
+            margin-bottom: 4;
+        }
+
+        Scale {
+            hexpand: true;
+            width-request: 100;
+            draw-value: false;
+
+            adjustment: Adjustment {
+                lower: 0;
+                upper: 100;
+                step-increment: 10;
+                page-increment: 10;
+                value: bind template.brightness bidirectional;
+            };
+
+            marks [
+                mark (0, bottom),
+                mark (10, bottom),
+                mark (20, bottom),
+                mark (30, bottom),
+                mark (40, bottom),
+                mark (50, bottom),
+                mark (60, bottom),
+                mark (70, bottom),
+                mark (80, bottom),
+                mark (90, bottom),
+                mark (100, bottom)
+            ]
+        }
+    }
+}

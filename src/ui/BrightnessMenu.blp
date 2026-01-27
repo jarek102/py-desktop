@@ -1,0 +1,55 @@
+using Gtk 4.0;
+
+template $BrightnessMenu : Box {
+    orientation: vertical;
+
+    Box header {
+        styles ["linked"]
+
+        Button icon {
+            icon-name: "display-brightness-symbolic";
+            sensitive: false;
+        }
+
+        Scale slider {
+            hexpand: true;
+            valign: center;
+            draw-value: false;
+
+            adjustment: Adjustment {
+                lower: 0;
+                upper: 100;
+                step-increment: 10;
+                page-increment: 10;
+                value: bind template.brightness bidirectional;
+            };
+
+            marks [
+                mark (0, bottom),
+                mark (10, bottom),
+                mark (20, bottom),
+                mark (30, bottom),
+                mark (40, bottom),
+                mark (50, bottom),
+                mark (60, bottom),
+                mark (70, bottom),
+                mark (80, bottom),
+                mark (90, bottom),
+                mark (100, bottom)
+            ]
+        }
+
+        Button expand {
+            icon-name: "go-down-symbolic";
+            clicked => $toggle_reveal();
+        }
+    }
+
+    Revealer revealer {
+        reveal-child: false;
+        
+        Box monitor_list {
+            orientation: vertical;
+        }
+    }
+}

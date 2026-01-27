@@ -7,14 +7,37 @@ from gi.repository import GObject
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("BrightnessService")
 
+class Monitor(GObject.Object):
+    bus_id = GObject.Property(type=str)
+    name = GObject.Property(type=str)
+    brightness = GObject.Property(type=int)
+    
+    def __init__(self, bus_id, name, current, service):
+        super().__init__()
+        self.bus_id = bus_id
+        self.name = name
+        self.service = service
+        self.brightness = current
+        self._update_task = None
+        self.connect("notify::brightness", self.on_change)
+        
+    def on_change(self, *args):
+        if self._update_task is None or self._update_task.done():
+            self._update_task = asyncio.get_event_loop().create_task(self.worker())
+            
+    async def worker(self):
+        while True:
+            target = self.brightness
+            await self.service.write_brightness(self.bus_id, target)
+            if self.brightness == target:
+                break
+
 class BrightnessService(GObject.Object):
     
     brightness = GObject.Property(type=int)
-    current_brightness = None
     busy = GObject.Property(type=bool, default=False)
     
     initialization_task = None
-    _update_task = None
     
     monitors = []
         
@@ -26,7 +49,7 @@ class BrightnessService(GObject.Object):
             return
 
         self.connect('notify::brightness', self.update_brightness)
-        self.initialization_task = asyncio.create_task(self.initialize())
+        self.initialization_task = asyncio.get_event_loop().create_task(self.initialize())
         
     async def initialize(self):
         self.busy = True
@@ -43,20 +66,40 @@ class BrightnessService(GObject.Object):
             if detect.returncode != 0:
                 logger.error(f"ddcutil detect failed: {stderr.decode()}")
 
-            # Regex for "I2C bus: /dev/i2c-X"
-            regex = r"I2C bus:\s+/dev/i2c-(\d+)"
-            
             self.monitors = []
-            for match in re.finditer(regex, output):
-                self.monitors.append(match.group(1))
+            displays = output.split("Display ")
             
-            logger.info(f"Detected Monitor Buses: {self.monitors}")
+            for d in displays:
+                if not d.strip(): continue
+                
+                bus_match = re.search(r"I2C bus:\s+/dev/i2c-(\d+)", d)
+                if not bus_match: continue
+                bus_id = bus_match.group(1)
+                
+                # Match "DRM connector: card1-DP-1" (newer) or "DRM_connector: ..." (older)
+                connector_match = re.search(r"DRM[ _]connector:\s+(.*)", d, re.IGNORECASE)
+                connector = connector_match.group(1).strip() if connector_match else f"Bus {bus_id}"
+                # Clean up connector name (e.g. card1-DP-1 -> DP-1)
+                connector = re.sub(r"^card\d+-", "", connector)
+                
+                # Parse "Monitor: Mfg:Model:Serial" from terse output
+                model_match = re.search(r"Monitor:\s+[^:]+:([^:]+):", d)
+
+                if model_match and model_match.group(1).strip():
+                    model = model_match.group(1).strip()
+                    name = f"{model} ({connector})"
+                else:
+                    name = f"Monitor ({connector})"
+                
+                val = await self.read_brightness(bus_id)
+                if val is None: val = 50
+                
+                self.monitors.append(Monitor(bus_id, name, val, self))
+            
+            logger.info(f"Detected Monitors: {[m.name for m in self.monitors]}")
 
             if self.monitors:
-                val = await self.read_brightness(self.monitors[0])
-                if val is not None:
-                    self.current_brightness = val
-                    self.set_property("brightness", val)
+                self.set_property("brightness", self.monitors[0].brightness)
             
         except Exception as e:
             logger.exception(f"Initialization error: {e}")
@@ -124,23 +167,7 @@ class BrightnessService(GObject.Object):
                 
         logger.error(f"Bus {bus_id}: Gave up after {max_retries} attempts. Monitor may be unresponsive.")
     
-    async def _worker_loop(self):
-        if self.initialization_task:
-            await self.initialization_task
-        
-        while self.brightness != self.current_brightness:
-            target = self.brightness
-            
-            # Run robust write logic in parallel for all monitors
-            tasks = [self.write_brightness(bus, target) for bus in self.monitors]
-            if tasks:
-                await asyncio.gather(*tasks)
-            
-            # Even if it failed, we update current_brightness to stop the loop
-            # forcing the user to move the slider again if they really want to retry manually
-            self.current_brightness = target
-    
     def update_brightness(self, _object, _psspec):
-        # Drop updates if we are already busy to prevent queueing up laggy operations
-        if self._update_task is None or self._update_task.done():
-            self._update_task = asyncio.create_task(self._worker_loop())
+        # When global brightness changes, update all monitors
+        for monitor in self.monitors:
+            monitor.set_property("brightness", self.brightness)

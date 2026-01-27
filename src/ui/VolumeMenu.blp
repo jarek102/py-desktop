@@ -1,0 +1,38 @@
+using Gtk 4.0;
+
+template $VolumeMenu : Box {
+    orientation: vertical;
+
+    Box header {
+        styles ["linked"]
+
+        Button icon {
+            icon-name: bind template.icon;
+            clicked => $toggle_mute();
+        }
+
+        Scale slider {
+            hexpand: true;
+            valign: center;
+            draw-value: false;
+            adjustment: Adjustment {
+                lower: 0;
+                upper: 1.0;
+                value: bind template.volume bidirectional;
+            };
+        }
+
+        Button expand {
+            icon-name: "go-down-symbolic";
+            clicked => $toggle_reveal();
+        }
+    }
+
+    Revealer revealer {
+        reveal-child: false;
+        
+        Box device_list {
+            orientation: vertical;
+        }
+    }
+}
