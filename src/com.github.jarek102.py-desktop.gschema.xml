@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="com.github.jarek102.py-desktop" path="/com/github/jarek102/py-desktop/">
+    <key name="bluetooth-favorites" type="as">
+      <default>[]</default>
+      <summary>Bluetooth Favorites</summary>
+      <description>List of MAC addresses for favorite bluetooth devices</description>
+    </key>
+  </schema>
+</schemalist>

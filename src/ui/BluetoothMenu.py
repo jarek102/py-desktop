@@ -4,6 +4,7 @@ import pathlib
 from gi.repository import (
     Gtk,
     GObject,
+    Gio,
     AstalBluetooth as Bluetooth,
 )
 
@@ -27,10 +28,12 @@ class BluetoothMenu(Gtk.Box):
     buttons = Gtk.Template.Child()
     
     favorites = {}
-    favorites_store = {"80:C3:BA:46:EF:9A"}
     
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
+        
+        self.settings = Gio.Settings.new("com.github.jarek102.py-desktop")
+        self.favorites_store = set(self.settings.get_strv("bluetooth-favorites"))
         
         self.bluetooth = Bluetooth.get_default()
         
@@ -55,6 +58,7 @@ class BluetoothMenu(Gtk.Box):
         self.update_active(self.toggle,self.bluetooth.props.is_powered)
             
     def make_favorite(self, bt_device : BluetoothDevice, _data = None):
+        address = bt_device.device.props.address
         if bt_device.favorite:
             button = Gtk.Button(icon_name=bt_device.icon)
             button.get_style_context().add_class("merged")
@@ -63,9 +67,13 @@ class BluetoothMenu(Gtk.Box):
             self.update_active(button,bt_device.device.props.connected)
             self.favorites[bt_device] = button
             self.buttons.insert_child_after(button,self.toggle)
+            self.favorites_store.add(address)
         else:
             self.buttons.remove(self.favorites[bt_device])
             self.favorites.pop(bt_device)
+            if address in self.favorites_store:
+                self.favorites_store.remove(address)
+        self.settings.set_strv("bluetooth-favorites", list(self.favorites_store))
             
     @Gtk.Template.Callback()
     def bluetooth_toggle(self, _scale, _type, value) -> None:

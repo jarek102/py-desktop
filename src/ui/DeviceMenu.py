@@ -1,7 +1,6 @@
 import pathlib
 import subprocess
 import gi
-import os
 
 from gi.repository import (
     Gio, 
@@ -54,11 +53,11 @@ class DeviceMenu(Astal.Window):
         
     @Gtk.Template.Callback()
     def reboot_clicked(self, _) -> None:
-        os.system("systemctl reboot")
+        subprocess.Popen(["systemctl", "reboot"])
         
     @Gtk.Template.Callback()
     def poweroff_clicked(self, _) -> None:
-        os.system("systemctl poweroff")
+        subprocess.Popen(["systemctl", "poweroff"])
         
     @Gtk.Template.Callback()
     def change_volume(self, _scale, _type, value) -> None:

@@ -9,7 +9,7 @@ class BrightnessService(GObject.Object):
     busy = GObject.Property(type=bool,default=False)
     
     initialization_task = None
-    update_tasks = []
+    _update_task = None
     
     monitors = []
         
@@ -35,9 +35,9 @@ class BrightnessService(GObject.Object):
         for match in re.finditer(regex,stdout.decode()):
             self.monitors.append(match.group(1))
         
-        brightnness = await self.read_brightness(self.monitors[0])
-        self.current_brightness = brightnness
-        self.brightness = brightnness
+        brightness = await self.read_brightness(self.monitors[0])
+        self.current_brightness = brightness
+        self.brightness = brightness
         self.busy = False
         
     async def read_brightness(self,monitor) -> int | None:
@@ -58,7 +58,7 @@ class BrightnessService(GObject.Object):
         for match in re.finditer(regex,stdout.decode()):
             return int(match.group(1))
     
-    async def write_brightness(self,monitor,brightnness) -> None:
+    async def write_brightness(self,monitor,brightness) -> None:
         ddcutil = await asyncio.create_subprocess_exec(
             "ddcutil",
             "-t",
@@ -66,42 +66,22 @@ class BrightnessService(GObject.Object):
             monitor,
             "set",
             "10",
-            f"{brightnness}",
+            f"{brightness}",
             stdout=asyncio.subprocess.PIPE
         )
         
         await ddcutil.wait()
     
-    async def update(self, brightness):
-        if self.initialization_task != None:
+    async def _worker_loop(self):
+        if self.initialization_task is not None:
             await self.initialization_task
-            self.initialization_task = None
         
-        current_task = None
-        
-        for task in self.update_tasks:
-            if task['value'] == brightness: 
-                current_task = task
-                continue
-            await task['task']
-        
-        if self.current_brightness == brightness:
-            self.update_tasks.remove(current_task)
-            return
-        
-        for monitor in self.monitors:
-            await self.write_brightness(monitor,brightness)
-        self.current_brightness = brightness
-        
-        self.update_tasks.remove(current_task)
+        while self.brightness != self.current_brightness:
+            target = self.brightness
+            for monitor in self.monitors:
+                await self.write_brightness(monitor, target)
+            self.current_brightness = target
     
     def update_brightness(self,_object,_psspec):
-        brightness = self.brightness
-        for task in self.update_tasks:
-            if task['value'] == brightness: return
-        
-        self.update_tasks.append({
-            "task" : asyncio.create_task(self.update(brightness)),
-            "value" : brightness
-        })
-        
+        if self._update_task is None or self._update_task.done():
+            self._update_task = asyncio.create_task(self._worker_loop())
