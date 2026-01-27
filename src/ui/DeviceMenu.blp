@@ -78,12 +78,24 @@ template $DeviceMenu: Astal.Window {
               icon-name: "display-brightness-symbolic";
             }
 
-            Scale brightness {
-                name: "brightness";
+            Scale brightness_scale {
+                name: "brightness_scale";
                 orientation: horizontal;
                 hexpand: true;
                 change-value => $change_brightness();
                 digits: 0;
+
+                mark { value: 0; position: top; }
+                mark { value: 10; position: top; }
+                mark { value: 20; position: top; }
+                mark { value: 30; position: top; }
+                mark { value: 40; position: top; }
+                mark { value: 50; position: top; }
+                mark { value: 60; position: top; }
+                mark { value: 70; position: top; }
+                mark { value: 80; position: top; }
+                mark { value: 90; position: top; }
+                mark { value: 100; position: top; }
 
                 adjustment: Gtk.Adjustment {
                     lower: 0;

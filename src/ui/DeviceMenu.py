@@ -24,6 +24,7 @@ BIDI = GObject.BindingFlags.BIDIRECTIONAL
 class DeviceMenu(Astal.Window):
     __gtype_name__ = 'DeviceMenu'
     
+    brightness_scale = Gtk.Template.Child()
     brightness = GObject.Property(type=int)
     volume = GObject.Property(type=float)
     volume_icon = GObject.Property(type=str)
@@ -64,6 +65,8 @@ class DeviceMenu(Astal.Window):
         Wp.get_default().get_default_speaker().set_volume(value)
         
     @Gtk.Template.Callback()
-    def change_brightness(self, scale, _type, value) -> None:
-        value = int(round(value,-1))
-        self.brightness_service.brightness = value
+    def change_brightness(self, scale, _type, value) -> bool:
+        snapped_value = int(round(value / 10) * 10)
+        self.brightness_service.brightness = snapped_value
+        scale.set_value(snapped_value)
+        return True
