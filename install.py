@@ -27,13 +27,16 @@ def main():
     
     # Compile schemas
     print("Compiling schemas...")
+
+    if not shutil.which("glib-compile-schemas"):
+        print("Error: 'glib-compile-schemas' executable not found in PATH.")
+        sys.exit(1)
+
     try:
         subprocess.run(["glib-compile-schemas", str(schema_dir)], check=True)
         print("Success! Schema registered.")
     except subprocess.CalledProcessError:
         print("Error: Failed to compile schemas.")
-    except FileNotFoundError:
-        print("Error: 'glib-compile-schemas' command not found.")
 
 if __name__ == "__main__":
     main()

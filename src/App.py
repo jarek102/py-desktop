@@ -31,7 +31,7 @@ class App(Astal.Application):
         if not self.system_menu:
             self.system_menu = DeviceMenu()
             self.add_window(self.system_menu)
-        if gdkmonitor != None and self.system_menu.get_monitor() != gdkmonitor:
+        if gdkmonitor is not None and self.system_menu.get_monitor() != gdkmonitor:
             self.system_menu.set_monitor(gdkmonitor)
         
         if self.system_menu.is_visible():

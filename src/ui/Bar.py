@@ -7,7 +7,6 @@ from gi.repository import (
     GObject,
     GLib,
     Gtk,
-    GObject,
     AstalBattery,
     AstalWp,
     AstalNetwork,
@@ -100,6 +99,9 @@ class Bar(Astal.Window):
         bt.bind_property("is-connected", self, "bluetooth-visible", SYNC)
 
         # tray
+        self._setup_tray()
+
+    def _setup_tray(self):
         tray = AstalTray.get_default()
         self._tray_items = {}
 
@@ -113,28 +115,24 @@ class Bar(Astal.Window):
             popover.insert_action_group("dbusmenu", item.get_action_group())
             item.connect(
                 "notify::action-group",
-                lambda *_: popover.insert_action_group(
-                    "dbusmenu", item.get_action_group()
-                ),
+                lambda *_: popover.insert_action_group("dbusmenu", item.get_action_group()),
             )
 
             self._tray_items[id] = button
             self.traybox.append(button)
 
         def on_tray_item_removed(_tray, id):
-            button = self._tray_items.get(id)
-            if button:
+            if button := self._tray_items.pop(id, None):
                 self.traybox.remove(button)
                 button.run_dispose()
-                del self._tray_items[id]
 
         tray.connect("item_added", on_tray_item_added)
         tray.connect("item_removed", on_tray_item_removed)
         self.connect(
             "destroy",
             lambda *_: (
-                tray.disconnect(on_tray_item_added),
-                tray.disconnect(on_tray_item_removed),
+                tray.disconnect_by_func(on_tray_item_added),
+                tray.disconnect_by_func(on_tray_item_removed),
             ),
         )
 
