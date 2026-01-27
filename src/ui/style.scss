@@ -1,27 +1,23 @@
-@use "sass:color";
+@use "sass:string";
 
-$bg: #222222;
-$muted: #444444;
-$fg: #f1f1f1;
-$accent: #378DF7;
-$radius: 8px;
+$bg: string.unquote("@window_bg_color");
+$fg: string.unquote("@window_fg_color");
+$accent: string.unquote("@accent_color");
+$popover-bg: string.unquote("@popover_bg_color");
+
+$radius: 12px;
 $radius-bar: 4px;
-$outside-margin: 12px;
+$margin: 12px;
 
 window.device-menu {
-    border: none;
-    box-shadow: none;
     background-color: transparent; 
-    font-size: 1.1em;
-    font-weight: bold;
     color: $fg;
 
     .menu-content {
-        background-color: $bg;
-        border-bottom-right-radius: $radius;
-        border-bottom-left-radius: $radius;
-        margin-top: 36px;
-        margin-right: 12px;
+        background-color: $popover-bg;
+        border-radius: 0 0 $radius $radius;
+        margin-top: 24px;
+        padding: 8px 0;
     }
 
     grid {
@@ -33,9 +29,9 @@ window.device-menu {
     }
 
     .item {
-        margin-left: $outside-margin;
-        margin-right: $outside-margin;
+        margin: 0 $margin;
         border-radius: $radius;
+        padding: 4px;
 
         image {
             padding-left: 12px;
@@ -47,6 +43,8 @@ window.device-menu {
             border-radius: 16px;
             min-width: 28px;
             min-height: 28px;
+            background: none;
+            box-shadow: none;
 
             image {
                 padding: 0px;
@@ -54,22 +52,21 @@ window.device-menu {
         }
 
         &:hover {
-            background-color: $muted; //color.adjust($fg, $alpha: -0.84);
+            background-color: string.unquote("alpha(#{$fg}, 0.1)");
         }
     }
 
     button {
-        background-color: $bg;
+        background-color: transparent;
+        color: $fg;
         min-width: 32px;
         min-height: 32px;
-        margin-left: $outside-margin;
-        margin-right: $outside-margin;
-        margin-top: 8px;
-        margin-bottom: 8px;
+        margin: 8px $margin;
         padding: 4px;
+        border-radius: $radius;
 
         &:hover {
-            background-color: $muted; //color.adjust($fg, $alpha: -0.84);
+            background-color: string.unquote("alpha(#{$fg}, 0.1)");
         }
     }
 
@@ -82,37 +79,31 @@ window.device-menu {
         color: $accent;
     }
 
-    .merged {
-        margin-left: 0;
-        margin-right: 0;
-        border-radius: 0;
-        // border-right: $accent solid 1px;
-    }
+    .linked {
+        margin: 8px $margin;
 
-    .merged:first-child {
-        margin-left: 12px;
-        border-bottom-left-radius: $radius;
-        border-top-left-radius: $radius;
-    }
+        > button {
+            margin: 0;
+            border-radius: 0;
 
-    .merged:last-child {
-        margin-right: 12px;
-        border-bottom-right-radius: $radius;
-        border-top-right-radius: $radius;
-        border-right: none;
+            &:first-child {
+                border-radius: $radius 0 0 $radius;
+            }
+
+            &:last-child {
+                border-radius: 0 $radius $radius 0;
+            }
+        }
     }
 }
 
 window.bar {
-    border: none;
-    box-shadow: none;
-    background-color: $bg;//color.adjust($bg, $alpha: -0.5);
+    background-color: $bg;
     color: $fg;
-    font-size: 1.1em;
     font-weight: bold;
 
     button {
-        background-color: $bg;
+        background-color: transparent;
         border-radius: $radius-bar;
         padding: 0px;
         min-height: 24px;
@@ -121,7 +112,7 @@ window.bar {
         margin-right: 2px;
 
         &:hover {
-            background-color: $muted; //color.adjust($fg, $alpha: -0.84);
+            background-color: string.unquote("alpha(#{$fg}, 0.1)");
         }
     }
 }

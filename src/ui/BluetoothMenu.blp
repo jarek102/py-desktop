@@ -4,22 +4,16 @@ template $BluetoothMenu:Box {
     orientation: vertical;
 
     Box buttons {
+        styles ["linked"]
+
         Button toggle {
             icon-name: "bluetooth-active-symbolic";
             clicked => $bluetooth_toggle();
             hexpand: true;
-
-            styles [
-                "merged"
-            ]
         }
         Button {
             icon-name: "go-down-symbolic";
             clicked => $show_devices();
-
-            styles [
-                "merged"
-            ]
         }
     }
 
