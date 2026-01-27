@@ -7,7 +7,7 @@
 * **Language:** Python 3.14+
 * **Desktop Shell Library:** [Astal](https://github.com/Aylur/astal) (via GObject Introspection)
 * **UI Toolkit:** GTK 4.0 + LibAdwaita 1.0
-* **UI Definition:** Blueprint (`.blp`) files
+* **UI Definition:** Blueprint (`.blp`) files use BLUEPRINT.md to work with .blp files.
 * **Styling:** SCSS (`.scss`) -> compiled to CSS
 
 ### 🔍 Strict Constraints for AI
