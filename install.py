@@ -4,27 +4,36 @@ import subprocess
 import pathlib
 import sys
 
-def compile_blueprints(root_dir):
+def compile_blueprints(src_dir):
     compiler = shutil.which("blueprint-compiler")
     if not compiler:
         print("Warning: 'blueprint-compiler' not found. Skipping blueprint compilation.")
         return
 
+    # Look for blueprints in src/ui (current location) or src/blueprints (target location)
+    search_dirs = [src_dir / "ui", src_dir / "blueprints"]
+    generated_dir = src_dir / "generated"
+    generated_dir.mkdir(exist_ok=True)
+
     print("Compiling blueprints...")
-    # Find all .blp files recursively
-    for blp_file in root_dir.rglob("*.blp"):
-        ui_file = blp_file.with_suffix(".ui")
-        
-        # Only compile if .ui is missing or older than .blp
-        if not ui_file.exists() or blp_file.stat().st_mtime > ui_file.stat().st_mtime:
-            print(f"  {blp_file.name} -> {ui_file.name}")
-            try:
-                subprocess.run([compiler, "compile", "--output", str(ui_file), str(blp_file)], check=True)
-            except subprocess.CalledProcessError:
-                print(f"Error compiling {blp_file.name}")
-                sys.exit(1)
-        else:
-            print(f"  {blp_file.name} (up to date)")
+    for b_dir in search_dirs:
+        if not b_dir.exists():
+            continue
+            
+        for blp_file in b_dir.rglob("*.blp"):
+            # Flatten output to generated/
+            ui_file = generated_dir / blp_file.with_suffix(".ui").name
+            
+            # Only compile if .ui is missing or older than .blp
+            if not ui_file.exists() or blp_file.stat().st_mtime > ui_file.stat().st_mtime:
+                print(f"  {blp_file.name} -> {ui_file.name}")
+                try:
+                    subprocess.run([compiler, "compile", "--output", str(ui_file), str(blp_file)], check=True)
+                except subprocess.CalledProcessError:
+                    print(f"Error compiling {blp_file.name}")
+                    sys.exit(1)
+            else:
+                print(f"  {blp_file.name} (up to date)")
 
 def compile_stylesheets(root_dir):
     compiler = shutil.which("sass")

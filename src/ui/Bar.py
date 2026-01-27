@@ -1,5 +1,4 @@
 import math
-import pathlib
 from typing import Optional
 from gi.repository import (
     Astal,
@@ -16,14 +15,12 @@ from gi.repository import (
     AstalBluetooth,
 )
 
-from .WindowManager import WindowManager
+from ui.WindowManager import WindowManager
+from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 
-BASE_DIR = pathlib.Path(__file__).resolve().parent
-UI_FILE = BASE_DIR / 'Bar.ui'
-
-@Gtk.Template(filename=UI_FILE.as_posix())
+@Blueprint("Bar.blp")
 class Bar(Astal.Window):
     __gtype_name__ = "Bar"
     

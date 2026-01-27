@@ -1,5 +1,4 @@
 import gi
-import pathlib
 
 from gi.repository import (
     Gtk,
@@ -9,16 +8,14 @@ from gi.repository import (
 )
 
 from ui.BluetoothDevice import BluetoothDevice
-
-BASE_DIR = pathlib.Path(__file__).resolve().parent
-UI_FILE = BASE_DIR / 'BluetoothMenu.ui'
+from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
 RW = GObject.ParamFlags.READWRITE
 
-@Gtk.Template(filename=UI_FILE.as_posix())
+@Blueprint("BluetoothMenu.blp")
 class BluetoothMenu(Gtk.Box):
     __gtype_name__ = 'BluetoothMenu'
     

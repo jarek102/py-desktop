@@ -1,21 +1,18 @@
 import gi
-import pathlib
 
 from gi.repository import (
     Gtk,
     GObject,
     AstalBluetooth as Bluetooth,
 )
-
-BASE_DIR = pathlib.Path(__file__).resolve().parent
-UI_FILE = BASE_DIR / 'BluetoothDevice.ui'
+from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
 RW = GObject.ParamFlags.READWRITE
 
-@Gtk.Template(filename=UI_FILE.as_posix())
+@Blueprint("BluetoothDevice.blp")
 class BluetoothDevice(Gtk.Box):
     __gtype_name__ = 'BluetoothDevice'
     

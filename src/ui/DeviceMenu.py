@@ -1,4 +1,3 @@
-import pathlib
 import subprocess
 import gi
 
@@ -13,14 +12,12 @@ from gi.repository import (
 from ui.BrightnessService import BrightnessService
 from ui.BluetoothMenu import BluetoothMenu
 from ui.PopupWindow import PopupWindow
-
-BASE_DIR = pathlib.Path(__file__).resolve().parent
-UI_FILE = BASE_DIR / 'DeviceMenu.ui'
+from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
-@Gtk.Template(filename=UI_FILE.as_posix())
+@Blueprint("DeviceMenu.blp")
 class DeviceMenu(Astal.Window, PopupWindow):
     __gtype_name__ = 'DeviceMenu'
     
