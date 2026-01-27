@@ -3,16 +3,16 @@ import subprocess
 import gi
 
 from gi.repository import (
-    Gio, 
+    Astal,
     Gtk,
     GObject,
-    Astal,
     AstalWp as Wp,
     AstalHyprland as Hyprland,
 )
 
 from ui.BrightnessService import BrightnessService
 from ui.BluetoothMenu import BluetoothMenu
+from ui.PopupWindow import PopupWindow
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
 UI_FILE = BASE_DIR / 'DeviceMenu.ui'
@@ -21,7 +21,7 @@ SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
 @Gtk.Template(filename=UI_FILE.as_posix())
-class DeviceMenu(Astal.Window):
+class DeviceMenu(Astal.Window, PopupWindow):
     __gtype_name__ = 'DeviceMenu'
     
     brightness_scale = Gtk.Template.Child()
@@ -30,19 +30,15 @@ class DeviceMenu(Astal.Window):
     volume_icon = GObject.Property(type=str)
 
     def __init__(self, **kwargs) -> None:
-        super().__init__(
-            anchor=Astal.WindowAnchor.RIGHT
-            | Astal.WindowAnchor.TOP, # pyright: ignore[reportOperatorIssue]
-            exclusivity=Astal.Exclusivity.EXCLUSIVE,
-            **kwargs)
+        super().__init__(**kwargs)
+        self.setup_popup()
         
         self.brightness_service = BrightnessService()
         self.brightness_service.bind_property("brightness",self,"brightness", SYNC)
         
-        speaker = Wp.get_default().get_audio().get_default_speaker()
+        speaker = Wp.get_default().get_default_speaker()
         speaker.bind_property("volume-icon", self, "volume-icon", SYNC)
         speaker.bind_property("volume", self, "volume", SYNC)
-        self.connect('notify::volume_icon', lambda self: print(self.volume_icon))
 
     @Gtk.Template.Callback()
     def close_clicked(self, _) -> None:

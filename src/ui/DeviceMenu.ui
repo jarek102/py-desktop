@@ -12,6 +12,9 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
     </style>
     <child>
       <object class="GtkGrid">
+        <style>
+          <class name="menu-content"/>
+        </style>
         <property name="column-homogeneous">true</property>
         <property name="width-request">336</property>
         <child>
@@ -80,12 +83,25 @@ corresponding .blp file and regenerate this file with blueprint-compiler.
               </object>
             </child>
             <child>
-              <object class="GtkScale" id="brightness">
-                <property name="name">brightness</property>
+              <object class="GtkScale" id="brightness_scale">
+                <property name="name">brightness_scale</property>
                 <property name="orientation">0</property>
                 <property name="hexpand">true</property>
                 <signal name="change-value" handler="change_brightness"/>
                 <property name="digits">0</property>
+                <marks>
+                  <mark value="0" position="bottom"></mark>
+                  <mark value="10" position="bottom"></mark>
+                  <mark value="20" position="bottom"></mark>
+                  <mark value="30" position="bottom"></mark>
+                  <mark value="40" position="bottom"></mark>
+                  <mark value="50" position="bottom"></mark>
+                  <mark value="60" position="bottom"></mark>
+                  <mark value="70" position="bottom"></mark>
+                  <mark value="80" position="bottom"></mark>
+                  <mark value="90" position="bottom"></mark>
+                  <mark value="100" position="bottom"></mark>
+                </marks>
                 <property name="adjustment">
                   <object class="GtkAdjustment">
                     <property name="lower">0</property>

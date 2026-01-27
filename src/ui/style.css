@@ -1,12 +1,17 @@
 window.device-menu {
   border: none;
   box-shadow: none;
-  background-color: #222222;
+  background-color: transparent;
   font-size: 1.1em;
   font-weight: bold;
   color: #f1f1f1;
+}
+window.device-menu .menu-content {
+  background-color: #222222;
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
+  margin-top: 36px;
+  margin-right: 12px;
 }
 window.device-menu grid {
   margin-bottom: 8px;
