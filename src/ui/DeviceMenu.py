@@ -9,7 +9,7 @@ from gi.repository import (
     AstalHyprland as Hyprland,
 )
 
-from ui.BrightnessService import BrightnessService
+from services.BrightnessService import BrightnessService
 from ui.BluetoothMenu import BluetoothMenu
 from ui.PopupWindow import PopupWindow
 from utils import Blueprint
