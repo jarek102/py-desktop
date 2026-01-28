@@ -1,11 +1,10 @@
 using Gtk 4.0;
 
 template $BluetoothDevice: Box {
+  styles ["item","linked"]
   hexpand: true;
-
-  styles [
-    "item",
-  ]
+  spacing: 12;
+  
 
   Image {
     icon-name: bind template.icon;
@@ -13,10 +12,8 @@ template $BluetoothDevice: Box {
 
   Label {
     label: bind template.name;
-  }
-
-  Box {
     hexpand: true;
+    halign: start;
   }
 
   Button {

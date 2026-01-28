@@ -17,7 +17,6 @@ window.device-menu icon {
 window.device-menu .item {
   margin: 0 12px;
   border-radius: 12px;
-  padding: 4px;
 }
 window.device-menu .item image {
   padding-left: 12px;
