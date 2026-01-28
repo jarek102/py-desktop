@@ -26,4 +26,5 @@ if __name__ == "__main__":
     GLib.timeout_add(10, loop_step, loop)
 
     app = App()
+    app.acquire_socket()
     sys.exit(app.run(None))
