@@ -9,6 +9,8 @@
 * **UI Toolkit:** GTK 4.0 + LibAdwaita 1.0
 * **UI Definition:** Blueprint (`.blp`) files use BLUEPRINT.md to work with .blp files.
 * **Styling:** SCSS (`.scss`) -> compiled to CSS
+* **Build System:** `Just` (Command Runner).
+* **Version Management:** `src/versions.py` handles `gi.require_version` calls. Import it before `gi.repository`.
 
 ### 🔍 Strict Constraints for AI
 
@@ -49,8 +51,6 @@
 
 ## 2. Project Structure
 
-## Project Structure
-
 We follow a strict separation of **Logic (Python)** and **UI Assets (Blueprints/SCSS)**, organized by **Component**.
 
 ```text
@@ -88,11 +88,11 @@ data/                    # other resources e.g. gschema.xml
 
 ### A. Creating a Widget (Python + Blueprint)
 
-**`src/ui/MyWidget.blp`**
+**`ui/MyWidget.blp`**
 
 ```blueprint
 using Gtk 4.0;
-using Astal 3.0;
+using Astal 4.0;
 
 template $MyWidget : Astal.Box {
   css-classes: ["my-widget"];
@@ -108,12 +108,11 @@ template $MyWidget : Astal.Box {
 **`src/ui/MyWidget.py`**
 
 ```python
-import gi
-gi.require_version("Gtk", "4.0")
-gi.require_version("Astal", "3.0")
+import versions
 from gi.repository import Gtk, GObject, Astal
+from utils import Blueprint
 
-@Gtk.Template(resource_path="/com/github/user/project/ui/MyWidget.blp")
+@Blueprint("MyWidget.blp")
 class MyWidget(Astal.Box):
     __gtype_name__ = "MyWidget"
 
@@ -171,7 +170,7 @@ Blueprint is the primary way to define UI.
 * **Declarative Bindings:** Use the `bind` keyword to link UI properties to GObject properties defined in your Python class.
 * **Classes:** Combine LibAdwaita classes with your custom ones.
 
-**Example Widget Definition (`src/ui/Bar.blp`):**
+**Example Widget Definition (`ui/Bar.blp`):**
 
 ```blueprint
 using Gtk 4.0;
