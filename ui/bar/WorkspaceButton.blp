@@ -1,0 +1,6 @@
+using Gtk 4.0;
+
+template $WorkspaceButton : Gtk.Button {
+  styles ["workspace-button"]
+  label: bind template.id_string;
+}
