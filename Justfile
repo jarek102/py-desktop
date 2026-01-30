@@ -35,7 +35,7 @@ run:
 # Watch mode (only watches UI/Styles, assumes typings are done)
 watch:
     @echo "👀 Watching {{ui_dir}} for changes..."
-    @find {{ui_dir}} -name \"*.blp\" -o -name \"*.scss\" | entr -s \"just ui styles\"
+    @find {{ui_dir}} -name "*.blp" -o -name "*.scss" | entr -r sh -c 'just ui styles'
 
 update-typings:
     rm -f {{typelib_stamp}}

@@ -38,7 +38,9 @@ def compile_stylesheets(root_dir):
 
     print("Compiling stylesheets...")
     scss_file = root_dir / "ui" / "style.scss"
-    css_file = scss_file.with_suffix(".css")
+    generated_dir = root_dir / "generated"
+    generated_dir.mkdir(parents=True, exist_ok=True)
+    css_file = generated_dir / "style.css"
 
     if not scss_file.exists():
         return
