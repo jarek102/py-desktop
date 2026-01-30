@@ -9,6 +9,10 @@ gen_dir := "generated"
 # Target location for schemas
 schema_target := env_var("HOME") / ".local/share/glib-2.0/schemas"
 
+# Location for system gi-stubs repository
+python_site := shell("python3 -c 'import site; print(site.getsitepackages()[0])'")
+system_stubs := python_site / "gi-stubs"
+
 # --- Main Commands ---
 
 default: build run
@@ -51,22 +55,30 @@ typings:
 
 # Internal recipe: The actual generation + REPLACEMENT step
 _gen-typings:
-    @echo "⚙️  Generating Raw Stubs..."
-    gengir --out {{gen_dir}}/typings/gi \
+    @echo "⚙️  Generating GObject stubs (gengir)..."
+    rm -rf {{gen_dir}}/typings/gi
+    mkdir -p {{gen_dir}}/typings/gi
+
+    gengir --out-dir {{gen_dir}}/typings/gi \
         Astal-4.0 AstalWp-0.1 AstalTray-0.1 AstalPowerProfiles-0.1 \
         AstalNotifd-0.1 AstalNiri-0.1 AstalNetwork-0.1 AstalMpris-0.1 \
         AstalIO-0.1 AstalHyprland-0.1 AstalGreet-0.1 AstalCava-0.1 \
-        AstalBluetooth-0.1 AstalBattery-0.1 AstalAuth-0.1 AstalApps-0.1 \
-        Gtk-4.0 Adw-1
-    @echo "🔨 Fixing stubs (Overwriting with system stubs)..."
-    @# Find system stubs path dynamically
-    @STUBS_DIR=$($(python) -c "import site; print(site.getsitepackages()[0])")/gi-stubs; \
-    if [ -d "$$STUBS_DIR" ]; then \
-        cp -r "$$STUBS_DIR/repository/"* {{gen_dir}}/typings/gi/repository/; \
-        echo "   -> Applied system overrides from $$STUBS_DIR"; \
+        AstalBluetooth-0.1 AstalBattery-0.1 AstalAuth-0.1 AstalApps-0.1
+
+    @echo "📥 Forcing system Gtk/Gio overrides..."
+    @echo "   python_site = {{python_site}}"
+    @echo "   system_stubs = {{system_stubs}}"
+
+    @if [ -d {{system_stubs}} ]; then \
+        echo "   📂 Found system stubs:"; \
+        ls {{system_stubs}}; \
+        rsync -a --delete {{system_stubs}}/ {{gen_dir}}/typings/gi/; \
+        echo "   ✅ System stubs applied"; \
     else \
-        echo "⚠️  WARNING: System stubs not found. IDE autocompletion might be poor."; \
+        echo "   ❌ gi-stubs directory missing"; \
     fi
+
+
 
 # 2. Compile Blueprints
 ui:
@@ -84,3 +96,10 @@ schema:
     mkdir -p {{schema_target}}
     cp {{data_dir}}/*.gschema.xml {{schema_target}}/
     glib-compile-schemas {{schema_target}}
+
+debug-stubs:
+    @echo "🐍 python_site = {{python_site}}"
+    @echo "📦 system_stubs = {{system_stubs}}"
+    @ls -ld {{python_site}} || true
+    @ls -ld {{system_stubs}} || true
+    @ls -ld {{system_stubs}}/repository || true
