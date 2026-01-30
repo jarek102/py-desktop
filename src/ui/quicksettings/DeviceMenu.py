@@ -9,16 +9,16 @@ from gi.repository import (
     AstalHyprland as Hyprland,
 )
 
-from ui.BrightnessMenu import BrightnessMenu
-from ui.VolumeMenu import VolumeMenu
-from ui.BluetoothMenu import BluetoothMenu
-from ui.PopupWindow import PopupWindow
+from ui.quicksettings.BrightnessMenu import BrightnessMenu
+from ui.quicksettings.VolumeMenu import VolumeMenu
+from ui.quicksettings.BluetoothMenu import BluetoothMenu
+from ui.common.PopupWindow import PopupWindow
 from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
-@Blueprint("DeviceMenu.blp")
+@Blueprint("quicksettings/DeviceMenu.blp")
 class DeviceMenu(Astal.Window, PopupWindow):
     __gtype_name__ = 'DeviceMenu'
     

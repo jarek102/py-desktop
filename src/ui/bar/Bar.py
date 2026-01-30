@@ -15,12 +15,12 @@ from gi.repository import (
     AstalBluetooth,
 )
 
-from ui.WindowManager import WindowManager
+from ui.common.WindowManager import WindowManager
 from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 
-@Blueprint("Bar.blp")
+@Blueprint("bar/Bar.blp")
 class Bar(Astal.Window):
     __gtype_name__ = "Bar"
     

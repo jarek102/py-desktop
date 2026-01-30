@@ -1,13 +1,13 @@
 import gi
 from gi.repository import Gtk, GObject
 from services.BrightnessService import BrightnessService
-from ui.BrightnessItem import BrightnessItem
+from ui.quicksettings.BrightnessItem import BrightnessItem
 from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
-@Blueprint("BrightnessMenu.blp")
+@Blueprint("quicksettings/BrightnessMenu.blp")
 class BrightnessMenu(Gtk.Box):
     __gtype_name__ = 'BrightnessMenu'
     

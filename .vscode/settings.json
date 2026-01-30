@@ -1,8 +1,10 @@
 {
     "python.analysis.extraPaths": [
-        "./typings"
+        "./generated/typings",
+        "./src"
     ],
     "python.autoComplete.extraPaths": [
-        "./typings"
+        "./generated/typings",
+        "./src"
     ]
 }

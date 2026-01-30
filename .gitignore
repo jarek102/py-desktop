@@ -1,6 +1,5 @@
 .buildconfig
 .vscode/launch.json
 **/__pycache__/*
-typings/**
-src/generated/**
+generated/
 

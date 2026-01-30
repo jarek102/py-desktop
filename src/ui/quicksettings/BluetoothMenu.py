@@ -7,7 +7,7 @@ from gi.repository import (
     AstalBluetooth as Bluetooth,
 )
 
-from ui.BluetoothDevice import BluetoothDevice
+from ui.quicksettings.BluetoothDevice import BluetoothDevice
 from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
@@ -15,7 +15,7 @@ BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
 RW = GObject.ParamFlags.READWRITE
 
-@Blueprint("BluetoothMenu.blp")
+@Blueprint("quicksettings/BluetoothMenu.blp")
 class BluetoothMenu(Gtk.Box):
     __gtype_name__ = 'BluetoothMenu'
     

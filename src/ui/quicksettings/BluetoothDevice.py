@@ -12,7 +12,7 @@ BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
 RW = GObject.ParamFlags.READWRITE
 
-@Blueprint("BluetoothDevice.blp")
+@Blueprint("quicksettings/BluetoothDevice.blp")
 class BluetoothDevice(Gtk.Box):
     __gtype_name__ = 'BluetoothDevice'
     

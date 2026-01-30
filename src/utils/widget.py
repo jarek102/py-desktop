@@ -1,9 +1,9 @@
 import pathlib
 from gi.repository import Gtk
 
-# Path to the 'src' directory (parent of utils)
-SRC_ROOT = pathlib.Path(__file__).parent.parent
-GENERATED_DIR = SRC_ROOT / "generated"
+# Path to the project root (grandparent of utils)
+PROJECT_ROOT = pathlib.Path(__file__).parent.parent.parent
+GENERATED_DIR = PROJECT_ROOT / "generated" / "ui"
 
 def Blueprint(ui_file: str = None):
     def decorator(cls):

@@ -1,11 +1,11 @@
 import pathlib
 
-from gi.repository import Astal, Gio, AstalIO
-from ui.DeviceMenu import DeviceMenu
-from ui.Bar import Bar
+from gi.repository import Astal, AstalNiri, Gio, AstalIO
+from ui.quicksettings.DeviceMenu import DeviceMenu
+from ui.bar.Bar import Bar
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
-CSS_FILE = BASE_DIR / 'ui' / 'style.css'
+CSS_FILE = BASE_DIR.parent / 'ui' / 'style.css'
 
 class App(Astal.Application):
     system_menu = None

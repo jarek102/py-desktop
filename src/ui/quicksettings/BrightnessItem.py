@@ -5,7 +5,7 @@ from utils import Blueprint
 SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
-@Blueprint("BrightnessItem.blp")
+@Blueprint("quicksettings/BrightnessItem.blp")
 class BrightnessItem(Gtk.Box):
     __gtype_name__ = 'BrightnessItem'
     

@@ -1,12 +1,12 @@
 import gi
 from gi.repository import Gtk, GObject, AstalWp as Wp
-from ui.AudioItem import AudioItem
+from ui.quicksettings.AudioItem import AudioItem
 from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
-@Blueprint("VolumeMenu.blp")
+@Blueprint("quicksettings/VolumeMenu.blp")
 class VolumeMenu(Gtk.Box):
     __gtype_name__ = 'VolumeMenu'
     

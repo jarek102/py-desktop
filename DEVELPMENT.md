@@ -15,7 +15,8 @@
 **You must adhere to these rules when generating code:**
 
 1. **Astal Over GTK:**
-* Always prefer `astal` namespace widgets over `Gtk` namespace when available (e.g., use `Astal.Window` instead of `Gtk.Window` for the main shell).
+* Prefer `astal` namespace widgets over `Gtk` namespace when reactivity is needed.
+* For desktop shell windows use `Astal.Window` instead of `Gtk.Window`, use `Gtk.Window` for settings and tool/utility windows.
 * Astal windows provide essential desktop shell features (anchors, exclusivity, layers) that standard GTK windows lack.
 
 
@@ -48,19 +49,38 @@
 
 ## 2. Project Structure
 
+## Project Structure
+
+We follow a strict separation of **Logic (Python)** and **UI Assets (Blueprints/SCSS)**, organized by **Component**.
+
 ```text
-src/
+src/                     # Contains only Python source code.
 ├── main.py              # Entry point
 ├── App.py               # Application logic
-├── ui/                  # Widget components
-│   ├── Bar.py           # Python logic
-│   ├── Bar.blp          # UI definition
-│   └── style.scss       # Global styles
+├── ui/                  # Contains the Python logic for widgets, mirroring the structure of `ui/`.
+│   ├── bar/             # Widgets specific to the top/bottom bar (e.g., Clock, Workspaces, the Bar itself).
+│   │   └── Bar.py       # Python logic
+│   ├── quicksettings/   # The control center/menus (e.g., Audio, Bluetooth, Network).
+│   │   │                # Can be further grouped by feature (e.g., `ui/quicksettings/audio/`).
+│   │   └── DeviceMenu.py
+│   └── common/          # Reusable widgets used across the app (e.g., Sliders, Toggles).
 ├── services/            # Custom services (non-Astal)
 └── utils/               # Helper functions
-typings/                 # GObject Introspection stubs (AUTO-GENERATED)
-
+ui/
+├── bar/
+│   └── Bar.blp          # UI definition
+├── quicksettings/
+├── common/
+└── style.scss           # Global styles
+generated/
+├── typings/             # GObject Introspection stubs (AUTO-GENERATED)
+└── ui/
+data/                    # other resources e.g. gschema.xml
 ```
+
+### Naming Convention
+* **Files**: PascalCase for Classes/Widgets (e.g., `VolumeMenu.py`), camelCase or snake_case for utilities.
+* **Matching**: `src/ui/bar/Bar.py` should correspond to `ui/bar/Bar.blp`.
 
 ---
 

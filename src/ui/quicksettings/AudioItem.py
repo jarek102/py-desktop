@@ -4,7 +4,7 @@ from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 
-@Blueprint("AudioItem.blp")
+@Blueprint("quicksettings/AudioItem.blp")
 class AudioItem(Gtk.Button):
     __gtype_name__ = 'AudioItem'
     
