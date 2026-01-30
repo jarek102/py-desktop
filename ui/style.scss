@@ -10,14 +10,23 @@ $radius-bar: 4px;
 $margin: 12px;
 
 window.device-menu {
-    background-color: transparent; 
-    color: $fg;
-
+    background-color: transparent; // Ensure the window itself is invisible
+    
+    // The actual container of the menu
     .menu-content {
         background-color: $popover-bg;
-        border-radius: 0 0 $radius $radius;
-        margin-top: 24px;
-        padding: 8px 0;
+        color: $fg;
+        
+        // SHAPE: Make it a floating island (rounded on ALL corners)
+        border-radius: $radius; 
+        
+        // PLACEMENT: Add gap from the bar
+        margin-top: 12px; 
+        margin-right: 12px; // Keep it away from screen edge
+        
+        // Depth
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
+        padding: 16px; // Internal padding for better spacing
     }
 
     grid {
@@ -97,22 +106,167 @@ window.device-menu {
     }
 }
 
-window.bar {
-    background-color: $bg;
-    color: $fg;
-    font-weight: bold;
+// --- Calendar (Popover) ---
+popover {
+    background: transparent; 
+    box-shadow: none; // We will shadow the content instead
 
+    // The actual background box of the popover
+    > contents {
+        background-color: $popover-bg;
+        color: $fg;
+        border-radius: $radius;
+        padding: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        margin-top: 12px; // Push it down from the clock pill
+    }
+
+    // Hide the little "arrow" triangle if it looks weird with floating bar
+    arrow {
+        background: none;
+        border: none;
+        box-shadow: none;
+    }
+}
+
+// --- Calendar Widget Specifics ---
+calendar {
+    background-color: transparent;
+    color: $fg;
+    border: none;
+    padding: 0;
+
+    // Header (Month/Year)
+    > header {
+        background: transparent;
+        border: none;
+        color: $accent;
+        font-weight: bold;
+        padding-bottom: 8px;
+    }
+
+    // The grid of days
+    .view {
+        background: transparent;
+    }
+    
+    // Round the selection indicator
+    &:selected {
+        background-color: $accent;
+        border-radius: $radius-bar; 
+        color: $bg;
+    }
+    
+    // Day numbers
+    label {
+        min-width: 32px;
+        min-height: 32px;
+    }
+}
+
+// Target the container if you want to center or add specific spacing
+window.bar {
+    // ... (keep your existing module/workspace styles) ...
+
+    // --- RESET ALL BUTTONS IN BAR ---
+    // This removes the ugly default GTK grey background and borders
     button {
-        background-color: transparent;
-        border-radius: $radius-bar;
-        padding: 0px;
-        min-height: 24px;
-        min-width: 24px;
-        margin-left: 2px;
-        margin-right: 2px;
+        background: none;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        min-height: 0;
+        min-width: 0;
+        border-radius: $radius; // Match your global radius
+        color: $fg;
+    }
+
+    // --- CLOCK PILL (Center) ---
+    .clock-pill {
+        padding: 0 12px;     // Breathing room for the text
+        min-height: 28px;    // Ensure it matches workspace height
+        font-weight: bold;
+        transition: background-color 0.2s;
+
+        &:hover, &:active {
+            background-color: string.unquote("alpha(#{$fg}, 0.1)");
+        }
+        
+        // Fix calendar popover looking out of place
+        popover {
+            background-color: $popover-bg;
+            color: $fg;
+        }
+    }
+
+    // --- SYSTEM INDICATORS (Right) ---
+    .system-pill {
+        padding: 0 12px;
+        min-height: 28px;
+        transition: background-color 0.2s;
 
         &:hover {
             background-color: string.unquote("alpha(#{$fg}, 0.1)");
         }
+
+        &:active {
+            background-color: string.unquote("alpha(#{$fg}, 0.2)");
+        }
+
+        // Fix icon sizes inside the pill
+        image {
+            -gtk-icon-style: regular; 
+            min-width: 16px;
+            min-height: 16px;
+        }
+    }
+
+    // --- TRAY ICONS ---
+    .tray {
+        margin-left: 8px; // Separate tray from clock if both exist
+
+        button {
+            padding: 0 4px;
+            &:hover {
+                background-color: string.unquote("alpha(#{$fg}, 0.1)");
+            }
+        }
+    }
+}
+
+// Target the buttons
+.workspace-button.dot {
+    // Force specific size to ensure a perfect circle
+    min-width: 12px;
+    min-height: 12px;
+    
+    padding: 0;
+    margin: 0 4px;
+    border-radius: 999px;
+    background-color: string.unquote("alpha(#{$fg}, 0.2)");
+    box-shadow: none;
+    border: none;
+
+    > label {
+        font-size: 0px;
+        opacity: 0;
+    }
+
+    // Transition for the "stretching" effect
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    &:hover {
+        background-color: string.unquote("alpha(#{$fg}, 0.4)");
+        min-width: 16px; 
+    }
+
+    &.active {
+        // Unlock width for the "pill" shape
+        min-width: 32px;
+        background-color: $accent;
+        
+        // Keep height fixed so it stays a pill, not a blob
+        min-height: 12px;
     }
 }

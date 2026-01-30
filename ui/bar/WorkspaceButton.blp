@@ -1,6 +1,10 @@
 using Gtk 4.0;
 
 template $WorkspaceButton : Gtk.Button {
-  styles ["workspace-button"]
+  styles ["workspace-button", "dot"]
+  
+  valign: center; 
+  halign: center;
+
   label: bind template.id_string;
 }
