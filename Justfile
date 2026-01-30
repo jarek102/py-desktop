@@ -14,8 +14,11 @@ system_stubs := python_site / "gi-stubs"
 # Location of girepository files
 gir_dir := "/usr/lib/girepository-1.0"
 
-astal_typelibs := "Astal-4.0.typelib AstalWp-0.1.typelib AstalTray-0.1.typelib AstalPowerProfiles-0.1.typelib AstalNotifd-0.1.typelib AstalNiri-0.1.typelib AstalNetwork-0.1.typelib AstalMpris-0.1.typelib AstalIO-0.1.typelib AstalHyprland-0.1.typelib AstalGreet-0.1.typelib AstalCava-0.1.typelib AstalBluetooth-0.1.typelib AstalBattery-0.1.typelib AstalAuth-0.1.typelib AstalApps-0.1.typelib"
+# Derive Astal GIRs from versions.py (single source of truth)
+# Produces: "Astal-4.0 AstalTray-0.1 ..." (space-separated)
+astal_girs := shell("python3 - <<'PY'\nimport re\ngs = []\nwith open('src/versions.py') as f:\n    for line in f:\n        m = re.search(r\"require_version\\('([^']+)',\\s*'([^']+)'\\)\", line)\n        if m and m.group(1).startswith('Astal'):\n            gs.append(f\"{m.group(1)}-{m.group(2)}\")\nprint(' '.join(gs))\nPY")
 
+# Stamp file used to detect typelib changes
 typelib_stamp := gen_dir / "typings/.typelib.stamp"
 
 # --- Main Commands ---
@@ -32,7 +35,7 @@ run:
 # Watch mode (only watches UI/Styles, assumes typings are done)
 watch:
     @echo "👀 Watching {{ui_dir}} for changes..."
-    @find {{ui_dir}} -name "*.blp" -o -name "*.scss" | entr -s "just ui styles"
+    @find {{ui_dir}} -name \"*.blp\" -o -name \"*.scss\" | entr -s \"just ui styles\"
 
 update-typings:
     rm -f {{typelib_stamp}}
@@ -50,11 +53,13 @@ prepare:
     mkdir -p {{gen_dir}}/ui
     mkdir -p {{gen_dir}}/typings/gi
 
+# Update the stamp by hashing mtimes of matching Astal typelibs
 update-typelib-stamp:
     @mkdir -p {{gen_dir}}/typings
     @stat -c '%y' {{gir_dir}}/Astal*.typelib \
         | sha256sum | cut -d' ' -f1 > {{typelib_stamp}}.new
 
+# Decide whether to run gengir (only when Astal typelibs changed)
 maybe-gen-astal: prepare update-typelib-stamp
     @if [ -f {{typelib_stamp}} ] && cmp -s {{typelib_stamp}} {{typelib_stamp}}.new; then \
         echo "✅ Astal typelibs unchanged — skipping gengir"; \
@@ -65,18 +70,16 @@ maybe-gen-astal: prepare update-typelib-stamp
         mv {{typelib_stamp}}.new {{typelib_stamp}}; \
     fi
 
+# Public target
 typings: maybe-gen-astal
 
+# Internal recipe: run gengir (on GIRs discovered from versions.py) and overlay system stubs
 _gen-typings:
     @echo "⚙️  Generating GObject stubs (gengir)..."
     rm -rf {{gen_dir}}/typings/gi
     mkdir -p {{gen_dir}}/typings/gi
 
-    gengir --out-dir {{gen_dir}}/typings/gi \
-        Astal-4.0 AstalWp-0.1 AstalTray-0.1 AstalPowerProfiles-0.1 \
-        AstalNotifd-0.1 AstalNiri-0.1 AstalNetwork-0.1 AstalMpris-0.1 \
-        AstalIO-0.1 AstalHyprland-0.1 AstalGreet-0.1 AstalCava-0.1 \
-        AstalBluetooth-0.1 AstalBattery-0.1 AstalAuth-0.1 AstalApps-0.1
+    gengir --out-dir {{gen_dir}}/typings/gi {{astal_girs}}
 
     @echo "📥 Overlaying system Gtk/Gio stubs..."
     @echo "   system_stubs = {{system_stubs}}"
@@ -105,6 +108,7 @@ schema:
     cp {{data_dir}}/*.gschema.xml {{schema_target}}/
     glib-compile-schemas {{schema_target}}
 
+# Verify overlay result (useful for CI)
 verify-stubs:
     @grep -q "typing.Protocol" {{gen_dir}}/typings/gi/repository/Gtk-4.0.pyi \
         && echo "✅ Gtk stubs look sane" \
