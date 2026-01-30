@@ -5,7 +5,7 @@ from ui.quicksettings.DeviceMenu import DeviceMenu
 from ui.bar.Bar import Bar
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
-CSS_FILE = BASE_DIR.parent / 'ui' / 'style.css'
+CSS_FILE = BASE_DIR.parent / 'generated' / 'style.css'
 
 class App(Astal.Application):
     system_menu = None
