@@ -6,7 +6,7 @@ class Overlay(Astal.Window):
 
     def __init__(self, on_close, **kwargs):
         super().__init__(
-            anchor=Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT,
+            anchor=Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT, # pyright: ignore[reportOperatorIssue]
             layer=Astal.Layer.TOP,
             exclusivity=Astal.Exclusivity.IGNORE,
             keymode=Astal.Keymode.NONE,
