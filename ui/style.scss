@@ -190,5 +190,5 @@ window.bar {
 }
 
 .overlay {
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: string.unquote("alpha(#{$bg}, 0.1)");
 }
