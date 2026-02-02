@@ -3,6 +3,7 @@ import pathlib
 from gi.repository import Astal, AstalNiri, Gio, AstalIO
 from ui.quicksettings.DeviceMenu import DeviceMenu
 from ui.bar.Bar import Bar
+from ui.common.Overlay import Overlay
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent
 CSS_FILE = BASE_DIR.parent / 'generated' / 'style.css'
@@ -10,6 +11,8 @@ CSS_FILE = BASE_DIR.parent / 'generated' / 'style.css'
 class App(Astal.Application):
     system_menu = None
     bars = {}
+    overlays = {}
+    active_popup = None
     
     def __init__(self, **kwargs):
         super().__init__(
@@ -27,6 +30,33 @@ class App(Astal.Application):
         for bar in self.bars.values():
             bar.present()
         
+    def _ensure_overlays(self):
+        if not self.overlays:
+            for mon in self.get_monitors():
+                self.overlays[mon] = Overlay(self.close_popups, gdkmonitor=mon)
+                self.add_window(self.overlays[mon])
+
+    def show_popup(self, window):
+        self._ensure_overlays()
+        
+        if self.active_popup and self.active_popup != window:
+            self.active_popup.hide()
+            
+        self.active_popup = window
+        
+        for ov in self.overlays.values():
+            ov.show()
+            
+        window.show()
+
+    def close_popups(self):
+        if self.active_popup:
+            self.active_popup.hide()
+            self.active_popup = None
+        
+        for ov in self.overlays.values():
+            ov.hide()
+
     def toggle_device_menu(self, gdkmonitor=None):
         if not self.system_menu:
             self.system_menu = DeviceMenu()
@@ -35,10 +65,10 @@ class App(Astal.Application):
             self.system_menu.set_monitor(gdkmonitor)
         
         if self.system_menu.is_visible():
-            self.system_menu.hide()
+            self.close_popups()
         else:
-            self.system_menu.present()
-        
+            self.show_popup(self.system_menu)
+
     def do_astal_application_request(self, msg: str, conn: Gio.SocketConnection) -> None:
         print(msg)
         AstalIO.write_sock(conn, "hello")
