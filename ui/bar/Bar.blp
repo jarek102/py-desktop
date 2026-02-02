@@ -61,6 +61,11 @@ template $Bar: Astal.Window {
                     }
                     Image {
                         icon-name: bind template.volume-icon;
+
+                        EventControllerScroll {
+                            flags: vertical;
+                            scroll => $on_volume_scroll();
+                        }
                     }
                     Box {
                         visible: bind template.battery-visible;
