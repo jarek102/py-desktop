@@ -10,10 +10,10 @@ class Overlay(Astal.Window):
             layer=Astal.Layer.TOP,
             exclusivity=Astal.Exclusivity.IGNORE,
             keymode=Astal.Keymode.NONE,
+            css_classes=["overlay"],
             **kwargs
         )
         
-        super().add_css_class("overlay")
         gesture = Gtk.GestureClick()
         gesture.connect("pressed", lambda *_: on_close())
         self.add_controller(gesture)

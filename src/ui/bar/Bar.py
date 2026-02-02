@@ -171,3 +171,14 @@ class Bar(Astal.Window):
     def menu_clicked(self, _) -> None:
         if self.window_manager:
             self.window_manager.toggle_device_menu(self.get_monitor())
+
+    @Gtk.Template.Callback()
+    def on_volume_scroll(self, _controller, _dx, dy) -> None:
+        speaker = AstalWp.get_default().get_default_speaker()
+        if not speaker:
+            return
+
+        if dy > 0:
+            speaker.set_volume(max(0, speaker.get_volume() - 0.05))
+        else:
+            speaker.set_volume(min(1.0, speaker.get_volume() + 0.05))
