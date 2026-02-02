@@ -42,6 +42,11 @@ class Workspaces(Gtk.Box):
         self.compositor.connect("workspaces-changed", self.on_workspaces_changed)
         self.compositor.connect("focused-workspace-changed", self.on_focused_changed)
         
+        # Scroll to switch workspaces
+        scroll = Gtk.EventControllerScroll(flags=Gtk.EventControllerScrollFlags.VERTICAL)
+        scroll.connect("scroll", self.on_scroll)
+        self.add_controller(scroll)
+        
         # Defer initial load until widget is mapped, so we can get the monitor
         self.connect("map", self._on_map)
 
@@ -94,3 +99,27 @@ class Workspaces(Gtk.Box):
             if isinstance(child, WorkspaceButton):
                 child.update_state()
             child = child.get_next_sibling()
+
+    def on_scroll(self, controller, dx, dy):
+        children = []
+        child = self.get_first_child()
+        while child:
+            if isinstance(child, WorkspaceButton):
+                children.append(child)
+            child = child.get_next_sibling()
+            
+        if not children:
+            return
+
+        active_index = -1
+        for i, btn in enumerate(children):
+            if btn.has_css_class("active"):
+                active_index = i
+                break
+        
+        target_index = active_index
+        if dy > 0: target_index += 1
+        elif dy < 0: target_index -= 1
+        
+        if 0 <= target_index < len(children):
+            children[target_index].ws.focus()
