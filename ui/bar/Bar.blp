@@ -3,6 +3,9 @@ using Astal 4.0;
 
 template $Bar: Astal.Window {
     styles ["bar"]
+    anchor: top | left | right;
+    exclusivity: exclusive;
+    keymode: on_demand;
 
     CenterBox centerbox {
         

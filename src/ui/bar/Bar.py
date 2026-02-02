@@ -41,14 +41,7 @@ class Bar(Astal.Window):
     traybox = Gtk.Template.Child()
 
     def __init__(self,window_manager: Optional[WindowManager] = None,**kwargs) -> None:
-        super().__init__(
-            anchor=Astal.WindowAnchor.TOP
-            | Astal.WindowAnchor.LEFT # pyright: ignore[reportOperatorIssue]
-            | Astal.WindowAnchor.RIGHT,
-            exclusivity=Astal.Exclusivity.EXCLUSIVE, # If compositor allocates space for this window.
-            keymode=Astal.Keymode.ON_DEMAND, # How to handle keyboard input focus.
-            **kwargs
-        )
+        super().__init__(**kwargs)
         
         self.window_manager = window_manager
 
