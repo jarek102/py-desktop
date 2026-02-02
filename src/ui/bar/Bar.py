@@ -45,7 +45,8 @@ class Bar(Astal.Window):
             anchor=Astal.WindowAnchor.TOP
             | Astal.WindowAnchor.LEFT # pyright: ignore[reportOperatorIssue]
             | Astal.WindowAnchor.RIGHT,
-            exclusivity=Astal.Exclusivity.EXCLUSIVE,
+            exclusivity=Astal.Exclusivity.EXCLUSIVE, # If compositor allocates space for this window.
+            keymode=Astal.Keymode.ON_DEMAND, # How to handle keyboard input focus.
             **kwargs
         )
         
