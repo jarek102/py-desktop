@@ -1,5 +1,6 @@
 @use "sass:string";
 
+// --- Variables ---
 $bg: string.unquote("@window_bg_color");
 $fg: string.unquote("@window_fg_color");
 $accent: string.unquote("@accent_color");
@@ -7,136 +8,37 @@ $popover-bg: string.unquote("@popover_bg_color");
 
 $radius: 12px;
 $radius-bar: 4px;
-$margin: 12px;
+$margin: 12px; // Floating margin
 
-window.device-menu {
-    background-color: transparent; // Ensure the window itself is invisible
-    
-    // The actual container of the menu
-    .menu-content {
-        background-color: $popover-bg;
-        color: $fg;
-        
-        // SHAPE: Make it a floating island (rounded on ALL corners)
-        border-radius: $radius; 
-        
-        // PLACEMENT: Add gap from the bar
-        margin-top: 12px; 
-        margin-right: 12px; // Keep it away from screen edge
-        
-        // Depth
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
-        padding: 16px; // Internal padding for better spacing
-    }
-
-    grid {
-        margin-bottom: 8px;
-    }
-
-    icon {
-        font-size: 16px;
-    }
-
-    .item {
-        margin: 0 $margin;
-        border-radius: $radius;
-        // padding: 4px;
-
-        image {
-            padding-left: 12px;
-            padding-right: 12px;
-        }
-
-        button {
-            margin: 4px;
-            border-radius: 16px;
-            min-width: 28px;
-            min-height: 28px;
-            background: none;
-            box-shadow: none;
-
-            image {
-                padding: 0px;
-            }
-        }
-
-        &:hover {
-            background-color: string.unquote("alpha(#{$fg}, 0.1)");
-        }
-    }
-
-    button {
-        background-color: transparent;
-        color: $fg;
-        min-width: 32px;
-        min-height: 32px;
-        margin: 8px $margin;
-        padding: 4px;
-        border-radius: $radius;
-
-        &:hover {
-            background-color: string.unquote("alpha(#{$fg}, 0.1)");
-        }
-    }
-
-    .slider {
-        padding-top: 4px;
-        padding-bottom: 4px; 
-    }
-
-    .active {
-        color: $accent;
-    }
-
-    .linked {
-        margin: 8px $margin;
-
-        > button {
-            margin: 0;
-            border-radius: 0;
-
-            &:first-child {
-                border-radius: $radius 0 0 $radius;
-            }
-
-            &:last-child {
-                border-radius: 0 $radius $radius 0;
-            }
-        }
-    }
-}
-
-// --- Calendar (Popover) ---
+// --- GLOBAL POPOVER RESET (Fixes Calendar & Tooltips) ---
 popover {
-    background: transparent; 
-    box-shadow: none; // We will shadow the content instead
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
 
-    // The actual background box of the popover
-    > contents {
-        background-color: $popover-bg;
-        color: $fg;
-        border-radius: $radius;
-        padding: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        margin-top: 12px; // Push it down from the clock pill
-    }
-
-    // Hide the little "arrow" triangle if it looks weird with floating bar
-    arrow {
+    > arrow {
         background: none;
         border: none;
         box-shadow: none;
     }
+
+    > contents {
+        background-color: $popover-bg;
+        color: $fg;
+        border-radius: $radius;
+        margin: 15px; // Space for shadow
+        padding: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
 }
 
-// --- Calendar Widget Specifics ---
+// --- CALENDAR WIDGET ---
 calendar {
     background-color: transparent;
     color: $fg;
     border: none;
     padding: 0;
 
-    // Header (Month/Year)
     > header {
         background: transparent;
         border: none;
@@ -145,31 +47,85 @@ calendar {
         padding-bottom: 8px;
     }
 
-    // The grid of days
     .view {
         background: transparent;
     }
-    
-    // Round the selection indicator
+
     &:selected {
         background-color: $accent;
-        border-radius: $radius-bar; 
+        border-radius: $radius-bar;
         color: $bg;
     }
-    
-    // Day numbers
+
     label {
         min-width: 32px;
         min-height: 32px;
     }
 }
 
-// Target the container if you want to center or add specific spacing
-window.bar {
-    // ... (keep your existing module/workspace styles) ...
+// --- DEVICE MENU (Quick Settings) ---
+window.device-menu {
+    background-color: transparent; // Window is invisible
 
-    // --- RESET ALL BUTTONS IN BAR ---
-    // This removes the ugly default GTK grey background and borders
+    .menu-content {
+        background-color: $popover-bg;
+        color: $fg;
+        border-radius: $radius;
+        margin: 12px $margin; // Top/Bottom margin + Side margin
+        padding: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    // Sliders & Toggles
+    grid { margin-bottom: 8px; }
+    icon { font-size: 16px; }
+
+    button {
+        background-color: transparent;
+        color: $fg;
+        border-radius: $radius;
+        box-shadow: none;
+        border: none;
+
+        &:hover {
+            background-color: string.unquote("alpha(#{$fg}, 0.1)");
+        }
+    }
+
+    .active { color: $accent; }
+    
+    // Linked Buttons (like volume/brightness clusters)
+    .linked {
+        margin: 8px $margin;
+        > button {
+            margin: 0;
+            border-radius: 0;
+            &:first-child { border-radius: $radius 0 0 $radius; }
+            &:last-child { border-radius: 0 $radius $radius 0; }
+        }
+    }
+}
+
+// --- BAR CONFIGURATION ---
+window.bar {
+    background-color: transparent;
+    color: $fg;
+    font-weight: bold;
+
+    // Floating Islands
+    .module {
+        background-color: $bg;
+        margin-top: $margin;
+        margin-bottom: $margin;
+        border-radius: $radius;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+
+        &.left { margin-left: $margin; padding: 0 8px; }
+        &.center { padding: 0 12px; }
+        &.right { margin-right: $margin; padding: 0 4px; }
+    }
+
+    // Reset all buttons inside the bar
     button {
         background: none;
         box-shadow: none;
@@ -178,95 +134,58 @@ window.bar {
         margin: 0;
         min-height: 0;
         min-width: 0;
-        border-radius: $radius; // Match your global radius
         color: $fg;
     }
 
-    // --- CLOCK PILL (Center) ---
-    .clock-pill {
-        padding: 0 12px;     // Breathing room for the text
-        min-height: 28px;    // Ensure it matches workspace height
-        font-weight: bold;
-        transition: background-color 0.2s;
-
-        &:hover, &:active {
-            background-color: string.unquote("alpha(#{$fg}, 0.1)");
-        }
-        
-        // Fix calendar popover looking out of place
-        popover {
-            background-color: $popover-bg;
-            color: $fg;
-        }
-    }
-
-    // --- SYSTEM INDICATORS (Right) ---
-    .system-pill {
+    // --- PILL STYLES ---
+    .clock-pill, .system-pill {
         padding: 0 12px;
         min-height: 28px;
+        border-radius: $radius-bar;
         transition: background-color 0.2s;
 
         &:hover {
             background-color: string.unquote("alpha(#{$fg}, 0.1)");
         }
-
-        &:active {
-            background-color: string.unquote("alpha(#{$fg}, 0.2)");
-        }
-
-        // Fix icon sizes inside the pill
-        image {
-            -gtk-icon-style: regular; 
-            min-width: 16px;
-            min-height: 16px;
-        }
     }
 
-    // --- TRAY ICONS ---
+    // Tray Icons
     .tray {
-        margin-left: 8px; // Separate tray from clock if both exist
-
+        margin-left: 8px;
         button {
             padding: 0 4px;
-            &:hover {
-                background-color: string.unquote("alpha(#{$fg}, 0.1)");
-            }
+            &:hover { background-color: string.unquote("alpha(#{$fg}, 0.1)"); }
         }
     }
 }
 
-// Target the buttons
+// --- WORKSPACES (Dot Animation) ---
 .workspace-button.dot {
-    // Force specific size to ensure a perfect circle
+    // Circle State
     min-width: 12px;
     min-height: 12px;
-    
     padding: 0;
     margin: 0 4px;
     border-radius: 999px;
     background-color: string.unquote("alpha(#{$fg}, 0.2)");
-    box-shadow: none;
-    border: none;
+    
+    // Animation
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
     > label {
         font-size: 0px;
         opacity: 0;
     }
 
-    // Transition for the "stretching" effect
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
     &:hover {
         background-color: string.unquote("alpha(#{$fg}, 0.4)");
-        min-width: 16px; 
+        min-width: 16px;
     }
 
+    // Pill State
     &.active {
-        // Unlock width for the "pill" shape
         min-width: 32px;
         background-color: $accent;
-        
-        // Keep height fixed so it stays a pill, not a blob
         min-height: 12px;
     }
 }
