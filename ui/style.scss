@@ -70,7 +70,8 @@ window.device-menu {
         background-color: $popover-bg;
         color: $fg;
         border-radius: $radius;
-        margin: 12px $margin; // Top/Bottom margin + Side margin
+        margin-left: $margin;
+        margin-right: $margin;
         padding: 16px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     }
