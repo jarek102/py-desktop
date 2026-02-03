@@ -18,6 +18,7 @@
 
 1. **Python style:**
 * Use python type hints.
+* Don't use very short variable names, execept for iterators.
 
 
 1. **Astal Over GTK:**
