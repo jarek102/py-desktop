@@ -7,26 +7,28 @@ from services.Compositor import Compositor
 class WorkspaceButton(Gtk.Button):
     __gtype_name__ = "WorkspaceButton"
     
-    id_string = GObject.Property(type=str)
+    id = GObject.Property(type=int)
+    name = GObject.Property(type=str)
 
-    def __init__(self, ws):
+
+    def __init__(self, workspace):
         super().__init__()
-        self.ws = ws
-        self.id = ws.id
-        self.id_string = ""
-        self.set_tooltip_text(ws.name)
+        self.workspace = workspace
+        workspace.bind_property("id", self, "id", GObject.BindingFlags.SYNC_CREATE)
+        workspace.bind_property("name", self, "name", GObject.BindingFlags.SYNC_CREATE)
+        workspace.bind_property("name", self, "tooltip_text", GObject.BindingFlags.SYNC_CREATE)
         
         self.connect("clicked", self.on_clicked)
         
         # Listen for active state changes (specifically for Niri)
-        self.ws.connect("notify::is-active", self.update_state)
-        self.update_state()
+        self.workspace.connect("notify::is-active", self._update_state)
+        self._update_state()
 
     def on_clicked(self, _):
-        self.ws.focus()
+        self.workspace.focus()
         
-    def update_state(self, *args):
-        is_active = self.ws.is_active or Compositor.get_default().is_workspace_visible(self.id)
+    def _update_state(self, *args):
+        is_active = self.workspace.get_property("is-active")
         if is_active:
             self.add_css_class("active")
         else:
@@ -57,36 +59,14 @@ class Workspaces(Gtk.Box):
 
     def on_workspaces_changed(self, *args):
         root = self.get_root()
-        if not root or not hasattr(root, "get_monitor"):
-            return
-        
-        monitor_id = root.get_monitor()
-        display = Gdk.Display.get_default()
-        monitor = display.get_monitors().get_item(monitor_id) if display else None
-        
-        if not monitor:
-            return
+
+        gdk_monitor_id = root.get_monitor()
 
         # Clear existing children
         while child := self.get_first_child():
             self.remove(child)
         
-        monitor_connector = monitor.get_connector()
-        
-        workspaces_to_show = []
-        if self.compositor.is_hyprland:
-            workspaces_to_show = [
-                ws for ws in self.compositor.workspaces if ws.monitor == monitor_connector
-            ]
-        elif self.compositor.is_niri:
-            # For Niri, show workspaces on this monitor + workspaces on no monitor (unassigned)
-            workspaces_to_show = [
-                ws for ws in self.compositor.workspaces 
-                if ws.monitor == monitor_connector or ws.monitor is None
-            ]
-        else:
-            # Fallback for other/unknown compositors: show all
-            workspaces_to_show = self.compositor.workspaces
+        workspaces_to_show = self.compositor.get_workspaces_for_monitor(gdk_id=gdk_monitor_id)
             
         for ws in workspaces_to_show:
             self.append(WorkspaceButton(ws))
@@ -97,7 +77,7 @@ class Workspaces(Gtk.Box):
         child = self.get_first_child()
         while child:
             if isinstance(child, WorkspaceButton):
-                child.update_state()
+                child._update_state()
             child = child.get_next_sibling()
 
     def on_scroll(self, controller, dx, dy):

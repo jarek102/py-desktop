@@ -6,7 +6,6 @@ from gi.repository import (
     Gtk,
     GObject,
     AstalWp as Wp,
-    AstalHyprland as Hyprland,
 )
 
 from ui.quicksettings.BrightnessMenu import BrightnessMenu
@@ -14,6 +13,7 @@ from ui.quicksettings.VolumeMenu import VolumeMenu
 from ui.quicksettings.BluetoothMenu import BluetoothMenu
 from ui.common.PopupWindow import PopupWindow
 from utils import Blueprint
+from services.Compositor import Compositor
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
@@ -34,7 +34,7 @@ class DeviceMenu(Astal.Window, PopupWindow):
 
     @Gtk.Template.Callback()
     def logout_clicked(self, _) -> None:
-        Hyprland.get_default().dispatch("exit","")
+        Compositor.get_default().logout()
         
     @Gtk.Template.Callback()
     def reboot_clicked(self, _) -> None:
