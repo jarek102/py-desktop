@@ -1,6 +1,12 @@
+import logging
 import os
+from typing import Optional
 import versions
 from gi.repository import GObject, Gdk, AstalHyprland, AstalNiri
+
+_log = logging.getLogger("py_desktop.compositor")
+if not logging.getLogger().handlers:
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
 class Monitor(GObject.Object):
     __gtype_name__ = "CompositorMonitor"
@@ -221,7 +227,6 @@ class Compositor(GObject.GObject):
     
     __gsignals__ = {
         'workspaces-changed': (GObject.SignalFlags.RUN_FIRST, None, ()),
-        'focused-workspace-changed': (GObject.SignalFlags.RUN_FIRST, None, ()),
     }
 
     @classmethod
@@ -233,25 +238,22 @@ class Compositor(GObject.GObject):
     def __init__(self):
         super().__init__()
         self._desktop = os.environ.get("XDG_CURRENT_DESKTOP", "").lower()
-        self._hyprland = None
-        self._niri = None
+        self._hyprland: Optional[AstalHyprland.Hyprland] = None
+        self._niri: Optional[AstalNiri.Niri] = None
         self._gdk_display = Gdk.Display.get_default()
         self._monitor_manager = None
         
         self._workspaces = []
-        self._focused_workspace = None
         
         match self._desktop:
             case "hyprland":
                 self._hyprland = AstalHyprland.get_default()
                 self._hyprland.connect("notify::workspaces", self._sync_hyprland_workspaces)
-                self._hyprland.connect("notify::focused-workspace", self._sync_hyprland_focus)
                 self._sync_hyprland_workspaces()
             
             case "niri":
                 self._niri = AstalNiri.get_default()
                 self._niri.connect("notify::workspaces", self._sync_niri_workspaces)
-                self._niri.connect("notify::focused-workspace", self._sync_niri_focus)
                 self._sync_niri_workspaces()
         
         self._monitor_manager = MonitorManager(
@@ -276,9 +278,6 @@ class Compositor(GObject.GObject):
     def workspaces(self):
         return self._workspaces
         
-    @property
-    def focused_workspace(self):
-        return self._focused_workspace
 
     @property
     def monitors(self):
@@ -328,44 +327,22 @@ class Compositor(GObject.GObject):
             AstalNiri.msg.quit(True)
 
     def _sync_hyprland_workspaces(self, *args):
+        _log.info("Sync hyprland workspaces")
         ws_list = []
-        for h_ws in sorted(self._hyprland.workspaces, key=lambda w: w.id):
-            if h_ws.id >= 0:
+        for h_ws in sorted(self._hyprland.props.workspaces, key=lambda w: w.props.id):
+            if h_ws.props.id >= 0:
                 ws_list.append(Workspace(h_ws, "hyprland"))
         
         self._workspaces = ws_list
+        _log.info("Hyprland workspaces count=%s ids=%s", len(self._workspaces), [w.id for w in self._workspaces])
         self.emit("workspaces-changed")
-        self._sync_hyprland_focus()
-
-    def _sync_hyprland_focus(self, *args):
-        h_focused = self._hyprland.focused_workspace
-        if h_focused:
-            found = next((w for w in self._workspaces if w.id == h_focused.id), None)
-            if not found:
-                # Fallback if workspace is not in the list (e.g. filtered out or race condition)
-                found = Workspace(h_focused, "hyprland")
-            self._focused_workspace = found
-        else:
-            self._focused_workspace = None
-        self.emit("focused-workspace-changed")
 
     def _sync_niri_workspaces(self, *args):
+        _log.info("Sync niri workspaces")
         ws_list = []
         for n_ws in self._niri.get_workspaces():
             ws_list.append(Workspace(n_ws, "niri"))
             
         self._workspaces = sorted(ws_list, key=lambda w: w.id if isinstance(w.id, int) else str(w.id))
+        _log.info("Niri workspaces count=%s ids=%s", len(self._workspaces), [w.id for w in self._workspaces])
         self.emit("workspaces-changed")
-        self._sync_niri_focus()
-
-    def _sync_niri_focus(self, *args):
-        n_focused = self._niri.get_focused_workspace()
-        if n_focused:
-            fid = getattr(n_focused, "id", getattr(n_focused, "idx", 0))
-            found = next((w for w in self._workspaces if w.id == fid), None)
-            if not found:
-                found = Workspace(n_focused, "niri")
-            self._focused_workspace = found
-        else:
-            self._focused_workspace = None
-        self.emit("focused-workspace-changed")
