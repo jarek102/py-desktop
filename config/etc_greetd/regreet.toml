@@ -1,0 +1,29 @@
+[background]
+# Path to the background image
+path = "/usr/share/wallpapers/greeter.jpg"
+
+# Available values: "Fill", "Contain", "Cover", "ScaleDown"
+fit = "Fill"
+
+[GTK]
+# Whether to use the dark theme
+application_prefer_dark_theme = true
+
+# Cursor theme name
+cursor_theme_name = "Fluent"
+
+# Icon theme name
+icon_theme_name = "Tela-nord-dark"
+
+# GTK theme name
+theme_name = "Orchis-Teal-Dark-Nord"
+
+[commands]
+reboot = [ "systemctl", "reboot" ]
+poweroff = [ "systemctl", "poweroff" ]
+
+[widget.clock]
+format = "%e.%m.%Y %a, %H:%M"
+
+timezone = "Europe/Warsaw"
+

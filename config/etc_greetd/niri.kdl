@@ -1,0 +1,29 @@
+spawn-sh-at-startup "regreet; niri msg action quit --skip-confirmation"
+spawn-sh-at-startup "swaybg -i /usr/share/wallpapers/greeter.jpg -m fill"
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+output "DP-1" {
+	focus-at-startup
+	variable-refresh-rate
+	mode "2560x1440@164.958"
+}
+
+output "DP-2" {
+	variable-refresh-rate	
+	mode "2560x1440@164.958"
+}
+
+output "PNP(BNQ) BenQ XL2411Z T1E00967SL0" {
+//    transform "90"
+
+    position x=-1080 y=0
+}
+
+cursor {
+    // Change the theme and size of the cursor as well as set the
+    // `XCURSOR_THEME` and `XCURSOR_SIZE` env variables.
+    //xcursor-theme "catppuccin-mocha-red-cursors"
+}
