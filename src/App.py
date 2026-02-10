@@ -14,9 +14,9 @@ class App(Astal.Application):
     overlays = {}
     active_popup = None
     
-    def __init__(self, **kwargs):
+    def __init__(self,instance_name = "py_desktop", **kwargs):
         super().__init__(
-            instance_name = "py_desktop",
+            instance_name = instance_name,
             application_id='com.github.jarek102.py-desktop',
             **kwargs)
         self.connect('activate', self.on_activate)

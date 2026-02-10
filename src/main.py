@@ -15,34 +15,62 @@ import versions
 import asyncio
 from gi.repository import GLib
 
-def configure_logging():
+def parse_args():
     parser = argparse.ArgumentParser(add_help=True)
     parser.add_argument(
         "--log-level",
-        default="INFO",
+        default=None,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         help="Set logging level.",
     )
     parser.add_argument(
-        "--no-logging",
+        "-v", "--verbose",
+        action="count",
+        default=0,
+        help="Increase verbosity (-v: WARNING, -vv: INFO, -vvv: DEBUG).",
+    )
+    parser.add_argument(
+        "-q", "--quiet",
         action="store_true",
-        help="Disable logging output.",
+        help="Suppress all output except for critical errors.",
+    )
+    parser.add_argument(
+        "-d", "--debug",
+        action="store_true",
+        help="Enable debug logging.",
+    )
+    parser.add_argument(
+        "-i", "--instance-name",
+        default="py_desktop",
+        help="Set application instance name.",
     )
     args, _unknown = parser.parse_known_args()
+    return args
 
-    if args.no_logging:
-        logging.disable(logging.CRITICAL)
-        return
+def configure_logging(args):
+    log_level = logging.ERROR
+
+    if args.log_level:
+        log_level = getattr(logging, args.log_level)
+    elif args.debug:
+        log_level = logging.DEBUG
+    elif args.quiet:
+        log_level = logging.CRITICAL
+    elif args.verbose > 0:
+        if args.verbose == 1:
+            log_level = logging.WARNING
+        elif args.verbose == 2:
+            log_level = logging.INFO
+        else:
+            log_level = logging.DEBUG
 
     if not logging.getLogger().handlers:
         logging.basicConfig(
-            level=getattr(logging, args.log_level),
+            level=log_level,
             format="%(asctime)s %(levelname)s %(name)s: %(message)s",
         )
     else:
-        logging.getLogger().setLevel(getattr(logging, args.log_level))
-
-    return
+        logging.getLogger().setLevel(log_level)
 
 
 from App import App
@@ -53,11 +81,12 @@ def loop_step(loop):
     return True
 
 if __name__ == "__main__":
-    configure_logging()
+    args = parse_args()
+    configure_logging(args)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     GLib.timeout_add(10, loop_step, loop)
 
-    app = App()
+    app = App(instance_name=args.instance_name)
     app.acquire_socket()
     sys.exit(app.run(None))
