@@ -1,0 +1,7 @@
+using Gtk 4.0;
+
+template $Launcher : Gtk.Button {
+  icon-name: "view-app-grid-symbolic";
+  tooltip-text: "Applications";
+  clicked => $on_clicked();
+}

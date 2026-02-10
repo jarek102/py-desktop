@@ -17,6 +17,7 @@ from gi.repository import (
 
 from ui.common.WindowManager import WindowManager
 from ui.bar.Workspaces import Workspaces
+from ui.bar.Launcher import Launcher
 from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
