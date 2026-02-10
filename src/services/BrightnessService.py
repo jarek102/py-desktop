@@ -4,6 +4,7 @@ import shutil
 import logging
 import pathlib
 from gi.repository import GObject
+from gi.repository import GLib
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("BrightnessService")
@@ -31,7 +32,7 @@ class SysfsMonitor(GObject.Object):
     def on_change(self, *args):
         if self._update_task and not self._update_task.done():
             self._update_task.cancel()
-        self._update_task = asyncio.create_task(self.worker())
+        self._update_task = asyncio.get_event_loop().create_task(self.worker())
             
     async def worker(self):
         target = self.brightness
