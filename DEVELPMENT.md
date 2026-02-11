@@ -87,6 +87,10 @@ src/                     # Contains only Python source code.
 │   └── common/          # Reusable widgets used across the app (e.g., Sliders, Toggles).
 ├── services/            # Custom services (non-Astal)
 │   └── Compositor.py    # Abstract compositor, compositor specific code should be kept here.
+│   └── theme_service.py # Desktop light/dark mode persistence and reactive state.
+│   └── power_profile_service.py # Laptop power profile wrapper with visibility gating.
+│   └── system_actions.py # Simple systemctl-backed actions (reboot/poweroff/suspend).
+│   └── scroll_ipc.py    # Scroll compositor IPC adapter (reactive subscribe path).
 └── utils/               # Helper functions
 ui/
 ├── bar/
@@ -235,3 +239,90 @@ Image {
 * **No Hex Codes:** Use named colors or SCSS variables.
 * **Scannability:** Prefer many small classes over one giant selector.
 * **Dynamic Styling:** If a widget needs to change style based on state (e.g., a "warning" state for battery), use `widget.add_css_class("warning")` in Python rather than changing individual styles.
+
+---
+
+## 5. Testing & Verification (Current)
+
+### Automated
+
+* Tests live in `tests/` (separate tree):
+* Unit tests: `tests/unit/`
+* Manual checklist: `tests/manual/CHECKLIST.md`
+* Commands:
+* `just test` -> run pytest
+* `just check` -> compile + tests
+* `just verify-stubs` -> sanity-check generated Gtk stubs
+
+### Runtime Smoke
+
+* Nested compositor scripts:
+* `scripts/run-niri-nested.sh`
+* `scripts/run-scroll-nested.sh`
+* `scripts/run-hyprland-test.sh`
+* IPC smoke:
+* `scripts/smoke-app-ipc.sh`
+* `just smoke-ipc`
+
+### Astal IPC for Testing
+
+* App request handling supports:
+* `ping` -> `pong`
+* `status` -> JSON state snapshot
+* `toggle-device-menu` -> toggles quick settings and returns visibility state
+* `close-popups` -> closes active popup
+* Helper:
+* `scripts/astal-ipc.sh <instance-name> <request>`
+
+### Compositor Strategy (Current)
+
+* **Niri:** Native AstalNiri path.
+* **Hyprland:** Native AstalHyprland path (still needs runtime testing coverage).
+* **Scroll:** Python IPC backend via `scrollmsg` with reactive `subscribe` monitoring.
+* Scroll nested smoke helper exports `SCROLLSOCK`/`SWAYSOCK`/`I3SOCK` and uses `GSK_RENDERER=gl` by default for better stability on NVIDIA.
+
+### DeviceMenu Strategy (Current)
+
+* Theme mode is managed via `ThemeService` (`org.gnome.desktop.interface` `color-scheme`).
+* Power profile state is managed via `PowerProfileService`.
+* Power profile controls are visible only when battery is present.
+* Speaker/microphone collapsed sliders show active device labels below slider rows.
+* For AstalPowerProfiles profile list reads, prefer `props.profiles` (safe in this environment) over direct getter calls that may crash.
+
+### Nested Niri Strategy (Current)
+
+* Nested runs default to `config/niri-nested.kdl` unless overridden by `PY_DESKTOP_NIRI_CONFIG`.
+* Smoke checks capture and validate nested `WAYLAND_DISPLAY` and `NIRI_SOCKET`.
+* Nested socket must differ from host socket when host `NIRI_SOCKET` is set.
+
+### Nested Scroll Strategy (Current)
+
+* Nested runs default to `config/scroll-nested.conf` unless overridden by `PY_DESKTOP_SCROLL_CONFIG`.
+* Scroll startup uses `-V` and derives nested `WAYLAND_DISPLAY` from log line:
+  * `Running compositor on wayland display '<name>'`
+* Nested IPC socket path is deterministic:
+  * `/run/user/$UID/scroll-ipc.$UID.$SCROLL_PID.sock`
+* Per `man scroll`: do not mix options and positional command in one invocation.
+* App startup environment should include:
+  * `WAYLAND_DISPLAY`, `SCROLLSOCK`, `SWAYSOCK`, `I3SOCK`, `XDG_CURRENT_DESKTOP=scroll`, `XDG_SESSION_TYPE=wayland`
+
+### Safety During Manual Tests
+
+* Avoid loud sound tests.
+* Avoid high-intensity brightness flashing.
+* Prefer state/assertion checks over disruptive stress tests.
+
+---
+
+## 6. Planning Guidance
+
+Use `DEVELPMENT.md` as the primary long-lived engineering document.
+
+When larger feature batches start, add a dedicated section:
+* **Roadmap / Milestones**
+* **Current Sprint / Next Tasks**
+* **Known Risks / Gaps**
+
+Create a separate plan file only when:
+* the plan is temporary/experimental, or
+* multiple alternative implementation tracks need parallel docs.

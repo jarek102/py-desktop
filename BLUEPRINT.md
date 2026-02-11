@@ -15,9 +15,12 @@ It provides:
 
 ## 1. Workflow
 
-1.  **Create** a `.blp` file in `src/ui/` (e.g., `src/ui/MyWidget.blp`).
-2.  **Compile** it by running `python install.py`. This generates a `.ui` file in `src/generated/`.
-3.  **Load** it in Python using the `@Blueprint` decorator.
+1.  **Create** a `.blp` file in `ui/` (e.g., `ui/bar/MyWidget.blp`).
+2.  **Compile** it with:
+    * `just ui` (preferred)
+    * or `python install.py`
+3.  Generated files are written to `generated/ui/`.
+4.  **Load** in Python via the project `@Blueprint(...)` decorator from `src/utils/widget.py`.
 
 ## 2. Python Integration
 
@@ -37,6 +40,10 @@ class MyWidget(Astal.Box):
     def __init__(self):
         super().__init__()
 ```
+
+Important project detail:
+* `@Blueprint("foo/Bar.blp")` resolves to `generated/ui/foo/Bar.ui`.
+* `.blp` suffix is automatically converted to `.ui` by the decorator.
 
 ## 2. Template Architecture
 
@@ -105,6 +112,11 @@ Scale {
 }
 
 ```
+
+Practical rules used in this project:
+* Callback method must be decorated with `@Gtk.Template.Callback()`.
+* Callback name in `.blp` must match the Python method exactly.
+* Use `Gtk.Template.Child()` only for widgets that need Python access.
 
 ---
 
@@ -199,6 +211,14 @@ Box {
 * **Adw Styles:** Use Libadwaita CSS classes like `.title-4`, `.subtitle`, `.card`, and `.boxed-list` for a native GNOME look.
 * **Spacing:** Prefer `spacing: 12;` for main layouts and `spacing: 6;` for compact groups.
 * **No Logic in UI:** Keep all math and string formatting in Python; use Blueprint only for structure and direct property binds.
+* **Layout safety:** For destructive/system actions in shared rows, separate by position to reduce accidental clicks (e.g., keep logout distinct from power actions).
+* **Reactivity first:** Prefer binding/event-driven updates over polling or imperative sync where possible.
+
+## 7. Project Gotchas
+
+* Keep namespace versions consistent in Python (`src/versions.py`) before importing `gi.repository`.
+* After editing `.blp`, always run `just ui` and ensure the generated template still loads.
+* If a Template callback is missing or renamed, widget initialization can fail at runtime even when Python syntax is valid.
 
 # Examples
 
