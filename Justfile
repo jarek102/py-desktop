@@ -32,6 +32,33 @@ build: prepare typings ui styles schema
 run:
     python3 {{src_dir}}/main.py
 
+# Run automated tests from the dedicated tests tree
+test:
+    pytest -q tests
+
+# Fast quality gate for local development
+check:
+    python3 -m compileall -q {{src_dir}}
+    just test
+
+# Nested compositor development helpers
+smoke-niri:
+    ./scripts/run-niri-nested.sh
+
+smoke-niri-ipc:
+    ./scripts/smoke-niri-ipc.sh
+
+smoke-scroll:
+    ./scripts/run-scroll-nested.sh
+
+# Uses the current HYPRLAND_INSTANCE_SIGNATURE from an active Hyprland session
+smoke-hyprland:
+    ./scripts/run-hyprland-test.sh
+
+# Start app and verify Astal IPC requests (ping/status)
+smoke-ipc:
+    ./scripts/smoke-app-ipc.sh
+
 # Watch mode (only watches UI/Styles, assumes typings are done)
 watch:
     @echo "👀 Watching {{ui_dir}} for changes..."
@@ -85,7 +112,7 @@ _gen-typings:
     @echo "   system_stubs = {{system_stubs}}"
 
     @if [ -d {{system_stubs}} ]; then \
-        rsync -a --delete {{system_stubs}}/ {{gen_dir}}/typings/gi/; \
+        rsync -a {{system_stubs}}/ {{gen_dir}}/typings/gi/; \
         echo "   ✅ System stubs applied"; \
     else \
         echo "   ❌ gi-stubs missing — typing will be degraded"; \
@@ -110,6 +137,6 @@ schema:
 
 # Verify overlay result (useful for CI)
 verify-stubs:
-    @grep -q "typing.Protocol" {{gen_dir}}/typings/gi/repository/Gtk-4.0.pyi \
+    @grep -q "^class Widget" {{gen_dir}}/typings/gi/repository/Gtk.pyi \
         && echo "✅ Gtk stubs look sane" \
         || (echo "❌ Gtk stubs look wrong" && exit 1)

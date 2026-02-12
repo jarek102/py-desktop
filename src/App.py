@@ -1,4 +1,5 @@
 import pathlib
+import json
 
 from gi.repository import Astal, AstalNiri, Gio, AstalIO
 from ui.quicksettings.DeviceMenu import DeviceMenu
@@ -70,5 +71,39 @@ class App(Astal.Application):
             self.show_popup(self.system_menu)
 
     def do_astal_application_request(self, msg: str, conn: Gio.SocketConnection) -> None:
-        print(msg)
-        AstalIO.write_sock(conn, "hello")
+        request = (msg or "").strip().lower()
+
+        if request == "ping":
+            AstalIO.write_sock(conn, "pong")
+            return
+
+        if request == "status":
+            payload = {
+                "instance_name": self.props.instance_name,
+                "bars": len(self.bars),
+                "overlays": len(self.overlays),
+                "popup_open": self.active_popup is not None,
+                "device_menu_visible": bool(
+                    self.system_menu is not None and self.system_menu.is_visible()
+                ),
+            }
+            AstalIO.write_sock(conn, json.dumps(payload))
+            return
+
+        if request == "toggle-device-menu":
+            self.toggle_device_menu()
+            payload = {
+                "popup_open": self.active_popup is not None,
+                "device_menu_visible": bool(
+                    self.system_menu is not None and self.system_menu.is_visible()
+                ),
+            }
+            AstalIO.write_sock(conn, json.dumps(payload))
+            return
+
+        if request == "close-popups":
+            self.close_popups()
+            AstalIO.write_sock(conn, "ok")
+            return
+
+        AstalIO.write_sock(conn, f"unknown request: {request}")

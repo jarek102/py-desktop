@@ -8,14 +8,30 @@ template $DeviceMenu: Astal.Window {
     keymode: exclusive;
 
     Grid {
-        styles ["menu-content"]
+        styles ["power-grid"]
         column-homogeneous: true;
-        width-request: 336;
 
         Button logout {
             name: "logout";
-            icon-name: "system-log-out-symbolic";
+            tooltip-text: "Log Out";
             clicked => $logout_clicked();
+
+            layout {
+                row: 0;
+                column: 2;
+            }
+
+            hexpand: false;
+
+            Image {
+                icon-name: "system-log-out-symbolic";
+            }
+        }
+
+        Button sleep {
+            name: "sleep";
+            tooltip-text: "Suspend";
+            clicked => $sleep_clicked();
 
             layout {
                 row: 0;
@@ -23,11 +39,15 @@ template $DeviceMenu: Astal.Window {
             }
 
             hexpand: false;
+
+            Image {
+                icon-name: "system-suspend-symbolic";
+            }
         }
 
         Button reboot {
             name: "reboot";
-            icon-name: "system-reboot-symbolic";
+            tooltip-text: "Reboot";
             clicked => $reboot_clicked();
 
             layout {
@@ -36,11 +56,15 @@ template $DeviceMenu: Astal.Window {
             }
 
             hexpand: false;
+
+            Image {
+                icon-name: "system-reboot-symbolic";
+            }
         }
 
         Button poweroff {
             name: "poweroff";
-            icon-name: "system-shutdown-symbolic";
+            tooltip-text: "Power Off";
             clicked => $poweroff_clicked();
 
             layout {
@@ -49,9 +73,27 @@ template $DeviceMenu: Astal.Window {
             }
 
             hexpand: false;
+
+            Image {
+                icon-name: "system-shutdown-symbolic";
+            }
         }
 
-        $BrightnessMenu {
+        Box {
+            visible: true;
+
+            ToggleButton {
+                label: "Light";
+                active: bind template.is_light_mode;
+                clicked => $light_mode_clicked();
+            }
+
+            ToggleButton {
+                label: "Dark";
+                active: bind template.is_dark_mode;
+                clicked => $dark_mode_clicked();
+            }
+
             layout {
                 row: 1;
                 column: 0;
@@ -59,7 +101,27 @@ template $DeviceMenu: Astal.Window {
             }
         }
 
-        $VolumeMenu audio_menu {
+        Box {
+            visible: bind template.power_profiles_visible;
+
+            ToggleButton {
+                label: "Saver";
+                active: bind template.power_saver_active;
+                clicked => $power_saver_clicked();
+            }
+
+            ToggleButton {
+                label: "Balanced";
+                active: bind template.balanced_active;
+                clicked => $balanced_clicked();
+            }
+
+            ToggleButton {
+                label: "Performance";
+                active: bind template.performance_active;
+                clicked => $performance_clicked();
+            }
+
             layout {
                 row: 2;
                 column: 0;
@@ -67,7 +129,7 @@ template $DeviceMenu: Astal.Window {
             }
         }
 
-        $VolumeMenu mic_menu {
+        $BrightnessMenu {
             layout {
                 row: 3;
                 column: 0;
@@ -75,9 +137,25 @@ template $DeviceMenu: Astal.Window {
             }
         }
 
-        $BluetoothMenu {
+        $VolumeMenu audio_menu {
             layout {
                 row: 4;
+                column: 0;
+                column-span: 6;
+            }
+        }
+
+        $VolumeMenu mic_menu {
+            layout {
+                row: 5;
+                column: 0;
+                column-span: 6;
+            }
+        }
+
+        $BluetoothMenu {
+            layout {
+                row: 6;
                 column: 0;
                 column-span: 6;
             }

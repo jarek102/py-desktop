@@ -18,6 +18,7 @@ class VolumeMenu(Gtk.Box):
     
     icon_name = GObject.Property(type=str)
     value = GObject.Property(type=float)
+    active_device_label = GObject.Property(type=str, default="")
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -54,7 +55,8 @@ class VolumeMenu(Gtk.Box):
         if self.endpoint:
             self._bindings = [
                 self.endpoint.bind_property("volume-icon", self, "icon_name", SYNC),
-                self.endpoint.bind_property("volume", self, "value", BIDI | SYNC)
+                self.endpoint.bind_property("volume", self, "value", BIDI | SYNC),
+                self.endpoint.bind_property("description", self, "active_device_label", SYNC)
             ]
 
     def on_default_changed(self, *args):

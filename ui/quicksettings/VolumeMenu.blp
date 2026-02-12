@@ -4,7 +4,7 @@ template $VolumeMenu : Box {
     orientation: vertical;
 
     Box header {
-        styles ["linked"]
+        styles ["panel-header"]
 
         Button icon {
             icon-name: bind template.icon_name;
@@ -26,6 +26,16 @@ template $VolumeMenu : Box {
             icon-name: "go-down-symbolic";
             clicked => $toggle_reveal();
         }
+    }
+
+    Label {
+        label: bind template.active_device_label;
+        halign: start;
+        ellipsize: end;
+        max-width-chars: 30;
+        margin-start: 8;
+        margin-top: 4;
+        margin-bottom: 2;
     }
 
     Revealer revealer {

@@ -100,7 +100,10 @@ class Bar(Astal.Window):
 
         def on_tray_item_added(tray, id):
             item = tray.get_item(id)
-            popover = Gtk.PopoverMenu.new_from_model(item.get_menu_model())
+            popover = Gtk.PopoverMenu.new_from_model_full(
+                item.get_menu_model(),
+                Gtk.PopoverMenuFlags.NESTED,
+            )
             icon = Gtk.Image()
             button = Gtk.MenuButton(popover=popover, child=icon)
 

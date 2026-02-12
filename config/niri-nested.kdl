@@ -1,0 +1,14 @@
+// Minimal config for nested Niri smoke/dev sessions.
+// Keeps environment deterministic and avoids host-session config side effects.
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+        }
+    }
+}
+
+binds {
+    Mod+Shift+Q { quit; }
+}

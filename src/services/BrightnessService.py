@@ -9,6 +9,23 @@ from gi.repository import GLib
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("BrightnessService")
 
+INTERNAL_CONNECTOR_PREFIXES = ("EDP", "LVDS", "DSI")
+
+
+def is_internal_connector(name: str | None) -> bool:
+    if not name:
+        return False
+    upper = name.strip().upper()
+    return upper.startswith(INTERNAL_CONNECTOR_PREFIXES)
+
+
+def should_skip_ddc_display(connector: str | None, has_sysfs_internal: bool) -> bool:
+    return has_sysfs_internal and is_internal_connector(connector)
+
+
+def clamp_internal_percent(percent: int, min_percent: int = 1) -> int:
+    return max(min_percent, min(100, int(percent)))
+
 class SysfsMonitor(GObject.Object):
     name = GObject.Property(type=str)
     brightness = GObject.Property(type=int)
@@ -35,7 +52,7 @@ class SysfsMonitor(GObject.Object):
         self._update_task = asyncio.get_event_loop().create_task(self.worker())
             
     async def worker(self):
-        target = self.brightness
+        target = clamp_internal_percent(self.brightness)
         try:
             if shutil.which("brightnessctl"):
                 proc = await asyncio.create_subprocess_exec(
@@ -46,6 +63,7 @@ class SysfsMonitor(GObject.Object):
                 await proc.wait()
             else:
                 val = int((target / 100) * self._max)
+                val = max(1, min(self._max, val))
                 with open(self.path / "brightness", "w") as f:
                     f.write(str(val))
         except Exception as e:
@@ -94,6 +112,7 @@ class BrightnessService(GObject.Object):
     async def initialize(self):
         self.busy = True
         self.monitors = []
+        has_sysfs_internal = False
         
         try:
             # 1. Internal Displays
@@ -102,6 +121,7 @@ class BrightnessService(GObject.Object):
                 for path in bl_dir.iterdir():
                     if (path / "brightness").exists():
                         self.monitors.append(SysfsMonitor(path))
+                        has_sysfs_internal = True
 
             # 2. External Displays (DDC)
             if shutil.which("ddcutil"):
@@ -131,6 +151,9 @@ class BrightnessService(GObject.Object):
                     connector = connector_match.group(1).strip() if connector_match else f"Bus {bus_id}"
                     # Clean up connector name (e.g. card1-DP-1 -> DP-1)
                     connector = re.sub(r"^card\d+-", "", connector)
+                    if should_skip_ddc_display(connector, has_sysfs_internal):
+                        logger.info("Skipping duplicate internal DDC display on %s", connector)
+                        continue
                     
                     # Parse "Monitor: Mfg:Model:Serial" from terse output
                     model_match = re.search(r"Monitor:\s+[^:]+:([^:]+):", d)

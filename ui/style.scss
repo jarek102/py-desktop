@@ -1,195 +1,182 @@
 @use "sass:string";
 
-// --- Variables ---
+// --- Theme Variables ---
 $bg: string.unquote("@window_bg_color");
 $fg: string.unquote("@window_fg_color");
 $accent: string.unquote("@accent_color");
 $popover-bg: string.unquote("@popover_bg_color");
 
-$radius: 12px;
-$radius-bar: 4px;
-$margin: 12px; // Floating margin
+// --- Derived Variables ---
+$hover: string.unquote("alpha(#{$fg}, 0.08)");
+$active: string.unquote("alpha(#{$fg}, 0.12)");
+$border: string.unquote("alpha(#{$fg}, 0.15)");
 
-// --- GLOBAL POPOVER RESET (Fixes Calendar & Tooltips) ---
-popover {
-    background-color: transparent;
+$radius: 12px;
+$radius-sm: 8px;
+$radius-pill: 99px;
+$spacing: 12px;
+
+// ==============================================
+//    RESET & UTILITIES
+// ==============================================
+
+* {
+    selection { background-color: $accent; color: $bg; }
+}
+
+button {
+    background: none;
     box-shadow: none;
     border: none;
-
-    > arrow {
-        background: none;
-        border: none;
-        box-shadow: none;
-    }
-
-    > contents {
-        background-color: $popover-bg;
-        color: $fg;
-        border-radius: $radius;
-        padding: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    }
-}
-
-// --- CALENDAR WIDGET ---
-calendar {
-    background-color: transparent;
-    color: $fg;
-    border: none;
     padding: 0;
+    margin: 0;
+    color: $fg;
+    min-height: 0;
+    min-width: 0;
+}
 
-    > header {
-        background: transparent;
-        border: none;
-        color: $accent;
-        font-weight: bold;
-        padding-bottom: 8px;
-    }
+// --- The ".item" Class (List Rows) ---
+.item {
+    padding: 8px 12px;
+    border-radius: $radius-sm;
+    transition: background-color 0.2s;
+    
+    &:hover { background-color: $hover; }
+    &.active { background-color: $active; color: $accent; }
 
-    .view {
-        background: transparent;
-    }
-
-    &:selected {
-        background-color: $accent;
-        border-radius: $radius-bar;
-        color: $bg;
-    }
-
-    label {
-        min-width: 32px;
-        min-height: 32px;
+    // Fix: Buttons inside items (like Bluetooth trash/fav) should be smaller
+    // to prevent the row from becoming huge.
+    button {
+        padding: 4px;
+        border-radius: $radius-sm;
+        &:hover { background-color: string.unquote("alpha(#{$fg}, 0.1)"); }
     }
 }
 
-// --- DEVICE MENU (Quick Settings) ---
+// --- The ".panel-header" Class (Expandable Headers) ---
+// Replaces .linked for Volume/Brightness/Bluetooth headers
+.panel-header {
+    padding: 4px 8px; 
+    border-radius: $radius-sm;
+    transition: background-color 0.2s;
+    min-height: 40px; // Consistent height
+
+    &:hover {
+        background-color: $hover;
+    }
+
+    // Elements inside the header
+    &> button {
+        padding: 4px;
+        border-radius: $radius-sm;
+        margin-right: 8px;
+        &:last-child { margin-right: 0; margin-left: 8px; }
+    }
+
+    scale {
+        margin: 0 8px;
+    }
+}
+
+// --- Power Grid (Shutdown, Logout, etc) ---
+.power-grid {
+    margin-bottom: $spacing;
+    
+    button {
+        padding: 12px;
+        border-radius: $radius-sm;
+        transition: all 0.2s;
+        
+        // Squared look with slight rounding
+        &:hover {
+            background-color: $active;
+            color: $accent;
+        }
+    }
+}
+
+// ==============================================
+//    COMPONENT STYLES
+// ==============================================
+
+// --- Device Menu Window ---
 window.device-menu {
-    background-color: transparent; // Window is invisible
+    background-color: transparent;
 
     .menu-content {
         background-color: $popover-bg;
         color: $fg;
         border-radius: $radius;
-        margin-left: $margin;
-        margin-right: $margin;
-        padding: 16px;
+        // Use padding to create space, removing fixed width lets it shrink
+        padding: $spacing;
+        margin: $spacing; 
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    }
-
-    // Sliders & Toggles
-    grid { margin-bottom: 8px; }
-    icon { font-size: 16px; }
-
-    button {
-        background-color: transparent;
-        color: $fg;
-        border-radius: $radius;
-        box-shadow: none;
-        border: none;
-
-        &:hover {
-            background-color: string.unquote("alpha(#{$fg}, 0.1)");
-        }
-    }
-
-    .active { color: $accent; }
-    
-    // Linked Buttons (like volume/brightness clusters)
-    .linked {
-        margin: 8px $margin;
-        > button {
-            margin: 0;
-            border-radius: 0;
-            &:first-child { border-radius: $radius 0 0 $radius; }
-            &:last-child { border-radius: 0 $radius $radius 0; }
-        }
     }
 }
 
-// --- BAR CONFIGURATION ---
+// --- Bar ---
 window.bar {
     background-color: transparent;
-    color: $fg;
-    font-weight: bold;
 
-    // Floating Islands
     .module {
         background-color: $bg;
-        margin-top: $margin;
-        margin-bottom: $margin;
         border-radius: $radius;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+        padding: 4px 8px; 
+        margin: $spacing 0;
 
-        &.left { margin-left: $margin; padding: 0 8px; }
-        &.center { padding: 0 12px; }
-        &.right { margin-right: $margin; padding: 0 4px; }
+        &.left { margin-left: $spacing; }
+        &.right { margin-right: $spacing; }
     }
-
-    // Reset all buttons inside the bar
-    button {
-        background: none;
-        box-shadow: none;
-        border: none;
-        padding: 0;
-        margin: 0;
-        min-height: 0;
-        min-width: 0;
-        color: $fg;
-    }
-
-    // --- PILL STYLES ---
+    
     .clock-pill, .system-pill {
         padding: 0 12px;
         min-height: 28px;
-        border-radius: $radius-bar;
+        border-radius: $radius-pill;
+        font-weight: bold;
         transition: background-color 0.2s;
-
-        &:hover {
-            background-color: string.unquote("alpha(#{$fg}, 0.1)");
-        }
+        &:hover { background-color: $hover; }
     }
-
-    // Tray Icons
-    .tray {
-        margin-left: 8px;
-        button {
-            padding: 0 4px;
-            &:hover { background-color: string.unquote("alpha(#{$fg}, 0.1)"); }
-        }
-    }
-}
-
-// --- WORKSPACES (Dot Animation) ---
-.workspace-button.dot {
-    // Circle State
-    min-width: 12px;
-    min-height: 12px;
-    padding: 0;
-    margin: 0 4px;
-    border-radius: 999px;
-    background-color: string.unquote("alpha(#{$fg}, 0.2)");
     
-    // Animation
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    > label {
-        font-size: 0px;
-        opacity: 0;
+    .tray button {
+        padding: 4px;
+        border-radius: 4px;
+        &:hover { background-color: $hover; }
     }
 
-    &:hover {
-        background-color: string.unquote("alpha(#{$fg}, 0.4)");
-        min-width: 16px;
-    }
+    // Workspaces
+    .workspaces { margin: 0; padding: 0; }
+    .workspace-button.dot {
+        min-width: 12px; min-height: 12px; padding: 0; margin: 0 4px;
+        border-radius: 999px;
+        background-color: string.unquote("alpha(#{$fg}, 0.2)");
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        
+        label { font-size: 0; color: transparent; opacity: 0; }
 
-    // Pill State
-    &.active {
-        min-width: 32px;
-        background-color: $accent;
-        min-height: 12px;
+        &:hover { background-color: string.unquote("alpha(#{$fg}, 0.5)"); min-width: 16px; }
+        &.active { min-width: 32px; background-color: $accent; color: $bg; }
     }
 }
 
+// --- Calendar ---
+calendar {
+    color: $fg;
+    background: transparent;
+    &> header { color: $accent; font-weight: bold; }
+    &:selected { background-color: $accent; border-radius: 4px; color: $bg; }
+}
+
+popover > contents {
+    background-color: $popover-bg;
+    color: $fg;
+    border-radius: $radius;
+    padding: $spacing;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+// --- OVERLAY ---
 .overlay {
-    background-color: string.unquote("alpha(#{$bg}, 0.1)");
+    // Increased opacity to ensure visibility
+    background-color: string.unquote("alpha(#{$bg}, 0.3)");
 }

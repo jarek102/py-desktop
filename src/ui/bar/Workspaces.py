@@ -80,6 +80,12 @@ class Workspaces(Gtk.Box):
 
     def on_workspaces_changed(self, *args):
         root = self.get_root()
+        if root is None:
+            _log.debug("Workspaces update skipped: widget root is not available yet")
+            return
+        if not hasattr(root, "get_monitor"):
+            _log.warning("Workspaces update skipped: root has no get_monitor()")
+            return
 
         gdk_monitor_id = root.get_monitor()
         _log.info("Workspaces changed gdk_monitor_id=%s", gdk_monitor_id)
