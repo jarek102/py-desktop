@@ -1,4 +1,7 @@
 from __future__ import annotations
+import logging
+
+_log = logging.getLogger(__name__)
 
 import versions
 from gi.repository import Gio, GObject
@@ -28,8 +31,18 @@ class ThemeService(GObject.Object):
         color_scheme = self._settings.get_string("color-scheme")
         current_is_settings_dark = color_scheme == "prefer-dark"
         
+
         if value == current_is_settings_dark:
             return
+
+        # Attempt to trigger screen transition to hide the repaint
+        try:
+            from services.Compositor import Compositor
+            _log.debug("Triggering Niri screen transition for theme switch")
+            # Delay in ms to allow apps to repaint behind the frozen screen
+            Compositor.get_default().do_screen_transition(500)
+        except Exception as e:
+            _log.warning(f"Failed to trigger screen transition: {e}")
 
         new_scheme = "prefer-dark" if value else "prefer-light"
         self._settings.set_string("color-scheme", new_scheme)

@@ -390,15 +390,28 @@ class Compositor(GObject.GObject):
             if workspace_matches_monitor(ws.monitor, target)
         ]
 
+    def do_screen_transition(self, delay_ms=0):
+        """
+        Triggers a screen transition if the compositor supports it.
+        Currently only implemented for Niri.
+        """
+        if self.is_niri:
+            try:
+                # Use GLib.Variant for int64 as per our fix in AstalNiri
+                v_delay = GLib.Variant('x', delay_ms)
+                AstalNiri.msg.do_screen_transition(v_delay)
+            except Exception as e:
+                _log.warning(f"Failed to trigger Niri screen transition: {e}")
+
     def logout(self):
         if self.is_hyprland and self._hyprland is not None:
-            self._hyprland.dispatch("exit", "")
+             self._hyprland.dispatch("exit", "")
         elif self.is_niri:
-            AstalNiri.msg.quit(True)
+             AstalNiri.msg.quit(True)
         elif self.is_scroll:
-            if self._scroll is not None:
-                self._scroll.stop_event_monitor()
-                self._scroll.quit()
+             if self._scroll is not None:
+                 self._scroll.stop_event_monitor()
+                 self._scroll.quit()
 
     def _sync_hyprland_workspaces(self, *args):
         _log.info("Sync hyprland workspaces")
