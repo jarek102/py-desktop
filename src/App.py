@@ -2,7 +2,7 @@ import pathlib
 import json
 
 from gi.repository import Astal, AstalNiri, Gio, AstalIO
-from ui.quicksettings.DeviceMenu import DeviceMenu
+from ui.quicksettings.DeviceMenuWindow import DeviceMenuWindow
 from ui.bar.Bar import Bar
 from ui.common.Overlay import Overlay
 
@@ -60,7 +60,7 @@ class App(Astal.Application):
 
     def toggle_device_menu(self, gdkmonitor=None):
         if not self.system_menu:
-            self.system_menu = DeviceMenu()
+            self.system_menu = DeviceMenuWindow()
             self.add_window(self.system_menu)
         if gdkmonitor is not None and self.system_menu.get_monitor() != gdkmonitor:
             self.system_menu.set_monitor(gdkmonitor)

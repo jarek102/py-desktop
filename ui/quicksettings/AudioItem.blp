@@ -1,12 +1,14 @@
 using Gtk 4.0;
 
-template $AudioItem : Button {
+template $AudioItem : ToggleButton {
     styles ["item"]
+    active: bind template.is_default;
     
     Box {
-        spacing: 12;
+        spacing: 0; // Remove spacing, relying on fixed-icon
         
         Image icon {
+            styles ["fixed-icon"] // <--- ADD THIS
             icon-name: bind template.icon;
         }
         
@@ -16,11 +18,9 @@ template $AudioItem : Button {
             halign: start;
             ellipsize: end;
             max-width-chars: 24;
+            margin-start: 12; // Visual gap from the 44px icon area
         }
         
-        Image check {
-            icon-name: "object-select-symbolic";
-            visible: bind template.is_default;
-        }
+
     }
 }

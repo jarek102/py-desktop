@@ -6,6 +6,8 @@ from utils import Blueprint
 SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
+
+
 @Blueprint("quicksettings/VolumeMenu.blp")
 class VolumeMenu(Gtk.Box):
     __gtype_name__ = 'VolumeMenu'

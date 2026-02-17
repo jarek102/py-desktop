@@ -1,14 +1,12 @@
 using Gtk 4.0;
-using Astal 4.0;
 
-template $DeviceMenu: Astal.Window {
-    styles ["device-menu"]
-    anchor: top | right;
-    exclusivity: normal;
-    keymode: exclusive;
-
+template $DeviceMenu: Box {
     Grid {
-        styles ["power-grid"]
+        styles [
+            "menu-content",
+            "power-grid",
+        ]
+
         column-homogeneous: true;
 
         Button logout {
@@ -82,16 +80,10 @@ template $DeviceMenu: Astal.Window {
         Box {
             visible: true;
 
-            ToggleButton {
-                label: "Light";
-                active: bind template.is_light_mode;
-                clicked => $light_mode_clicked();
-            }
-
-            ToggleButton {
-                label: "Dark";
-                active: bind template.is_dark_mode;
-                clicked => $dark_mode_clicked();
+            $FeatureToggle {
+                label: "Dark Mode";
+                icon-name: "night-light-symbolic";
+                active: bind template.is_dark_mode bidirectional;
             }
 
             layout {

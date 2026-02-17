@@ -1,0 +1,27 @@
+using Gtk 4.0;
+
+template $FeatureToggle: ToggleButton {
+    styles [
+        "feature-toggle",
+    ]
+
+    Box {
+        orientation: vertical;
+        spacing: 6;
+        halign: center;
+        valign: center;
+
+        Image icon {
+            icon-name: bind template.icon_name;
+            pixel-size: 24;
+        }
+
+        Label label {
+            label: bind template.label;
+
+            styles [
+                "caption-heading",
+            ]
+        }
+    }
+}

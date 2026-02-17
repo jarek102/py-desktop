@@ -1,10 +1,10 @@
-@use "sass:string";
+ @use "sass:string";
 
 // --- Theme Variables ---
-$bg: string.unquote("@window_bg_color");
-$fg: string.unquote("@window_fg_color");
-$accent: string.unquote("@accent_color");
-$popover-bg: string.unquote("@popover_bg_color");
+$bg: string.unquote(" @window_bg_color");
+$fg: string.unquote(" @window_fg_color");
+$accent: string.unquote(" @accent_color");
+$popover-bg: string.unquote(" @popover_bg_color");
 
 // --- Derived Variables ---
 $hover: string.unquote("alpha(#{$fg}, 0.08)");
@@ -35,17 +35,24 @@ button {
     min-width: 0;
 }
 
-// --- The ".item" Class (List Rows) ---
+// --- The ".item" Class (List Rows - Audio, Bluetooth, Monitors) ---
 .item {
-    padding: 8px 12px;
+    // FIX: Increased left padding (20px) to indent items relative to the header.
+    // This fixes the "Reverse Tree" look.
+    padding: 8px 12px 8px 20px; 
     border-radius: $radius-sm;
     transition: background-color 0.2s;
     
     &:hover { background-color: $hover; }
-    &.active { background-color: $active; color: $accent; }
+    
+    // Unified Active State
+    &:checked,
+    &.active { 
+        background-color: $active; 
+        color: $accent; 
+        image, label { color: $accent; }
+    }
 
-    // Fix: Buttons inside items (like Bluetooth trash/fav) should be smaller
-    // to prevent the row from becoming huge.
     button {
         padding: 4px;
         border-radius: $radius-sm;
@@ -53,32 +60,27 @@ button {
     }
 }
 
-// --- The ".panel-header" Class (Expandable Headers) ---
-// Replaces .linked for Volume/Brightness/Bluetooth headers
+// --- The ".panel-header" Class (Volume/Brightness Master Row) ---
 .panel-header {
+    // FIX: Smaller padding (8px) so it sits "outside" the items
     padding: 4px 8px; 
     border-radius: $radius-sm;
     transition: background-color 0.2s;
-    min-height: 40px; // Consistent height
+    min-height: 40px; 
 
-    &:hover {
-        background-color: $hover;
-    }
+    &:hover { background-color: $hover; }
 
-    // Elements inside the header
-    &> button {
+    > button {
         padding: 4px;
         border-radius: $radius-sm;
         margin-right: 8px;
         &:last-child { margin-right: 0; margin-left: 8px; }
     }
-
-    scale {
-        margin: 0 8px;
-    }
+    
+    scale { margin: 0 8px; }
 }
 
-// --- Power Grid (Shutdown, Logout, etc) ---
+// --- Power Grid (Shutdown, Logout) ---
 .power-grid {
     margin-bottom: $spacing;
     
@@ -87,7 +89,6 @@ button {
         border-radius: $radius-sm;
         transition: all 0.2s;
         
-        // Squared look with slight rounding
         &:hover {
             background-color: $active;
             color: $accent;
@@ -95,11 +96,19 @@ button {
     }
 }
 
+// --- Captions (Labels below headers) ---
+.caption {
+    font-size: 0.9em;
+    color: string.unquote("alpha(#{$fg}, 0.6)");
+    margin-top: -4px;
+    margin-bottom: 8px;
+    margin-left: 12px; // Align with general text flow
+}
+
 // ==============================================
 //    COMPONENT STYLES
 // ==============================================
 
-// --- Device Menu Window ---
 window.device-menu {
     background-color: transparent;
 
@@ -107,14 +116,13 @@ window.device-menu {
         background-color: $popover-bg;
         color: $fg;
         border-radius: $radius;
-        // Use padding to create space, removing fixed width lets it shrink
         padding: $spacing;
         margin: $spacing; 
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     }
 }
 
-// --- Bar ---
+// --- Bar & Widgets ---
 window.bar {
     background-color: transparent;
 
@@ -144,8 +152,8 @@ window.bar {
         &:hover { background-color: $hover; }
     }
 
-    // Workspaces
     .workspaces { margin: 0; padding: 0; }
+    
     .workspace-button.dot {
         min-width: 12px; min-height: 12px; padding: 0; margin: 0 4px;
         border-radius: 999px;
@@ -159,11 +167,10 @@ window.bar {
     }
 }
 
-// --- Calendar ---
 calendar {
     color: $fg;
     background: transparent;
-    &> header { color: $accent; font-weight: bold; }
+    > header { color: $accent; font-weight: bold; }
     &:selected { background-color: $accent; border-radius: 4px; color: $bg; }
 }
 
@@ -175,8 +182,14 @@ popover > contents {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
-// --- OVERLAY ---
 .overlay {
-    // Increased opacity to ensure visibility
     background-color: string.unquote("alpha(#{$bg}, 0.3)");
+}
+
+// Reset for ToggleButtons used as items
+togglebutton.item {
+    background: none; box-shadow: none; border: none;
+    padding: 8px 12px 8px 20px; // Match .item padding
+    &:checked { background-color: $active; color: $accent; }
+    &:hover { background-color: $hover; }
 }

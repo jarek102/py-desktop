@@ -4,6 +4,7 @@ from gi.repository import (
     Gtk,
 )
 
+from ui.common.FeatureToggle import FeatureToggle
 from ui.quicksettings.BrightnessMenu import BrightnessMenu
 from ui.quicksettings.VolumeMenu import VolumeMenu
 from ui.quicksettings.BluetoothMenu import BluetoothMenu
@@ -11,11 +12,11 @@ from ui.common.PopupWindow import PopupWindow
 from utils import Blueprint
 from services.Compositor import Compositor
 from services import system_actions
-from services.theme_service import ThemeMode, ThemeService
+from services.theme_service import ThemeService
 from services.power_profile_service import PowerProfileService
 
 @Blueprint("quicksettings/DeviceMenu.blp")
-class DeviceMenu(Astal.Window, PopupWindow):
+class DeviceMenu(Gtk.Box):
     __gtype_name__ = 'DeviceMenu'
 
     is_dark_mode = GObject.Property(type=bool, default=False)
@@ -29,15 +30,18 @@ class DeviceMenu(Astal.Window, PopupWindow):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.setup_popup()
+
 
         self.theme_service = ThemeService()
         self.power_profile_service = PowerProfileService()
 
         # Bind theme properties directly
         self.theme_service.bind_property(
-            "is_dark", self, "is_dark_mode", GObject.BindingFlags.SYNC_CREATE
+            "is_dark", self, "is_dark_mode", GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL
         )
+        
+        # Determine initial state
+        self.is_dark_mode = self.theme_service.is_dark
 
         # Bind power profile visibility
         self.power_profile_service.bind_property(
@@ -61,16 +65,6 @@ class DeviceMenu(Astal.Window, PopupWindow):
     @Gtk.Template.Callback()
     def logout_clicked(self, _) -> None:
         Compositor.get_default().logout()
-
-    @Gtk.Template.Callback()
-    def dark_mode_clicked(self, button) -> None:
-        if button.get_active():
-            self.theme_service.set_mode(ThemeMode.DARK)
-
-    @Gtk.Template.Callback()
-    def light_mode_clicked(self, button) -> None:
-        if button.get_active():
-            self.theme_service.set_mode(ThemeMode.LIGHT)
 
     @Gtk.Template.Callback()
     def power_saver_clicked(self, button) -> None:

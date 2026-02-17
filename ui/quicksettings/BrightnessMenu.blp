@@ -7,6 +7,7 @@ template $BrightnessMenu : Box {
         styles ["panel-header"]
 
         Button icon {
+            styles ["fixed-icon"]
             icon-name: bind template.icon_name;
             sensitive: false;
         }
@@ -41,6 +42,7 @@ template $BrightnessMenu : Box {
         }
 
         Button expand {
+            styles ["fixed-icon"]
             icon-name: "go-down-symbolic";
             clicked => $toggle_reveal();
         }
