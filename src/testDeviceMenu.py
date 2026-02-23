@@ -1,3 +1,5 @@
+import logging
+
 import gi
 import versions
 import pathlib
@@ -18,14 +20,14 @@ class TestApp(Astal.Application):
         self.connect('activate', self.on_activate)
 
     def on_activate(self, _):
-        if CSS_FILE.exists():
-            self.apply_css(CSS_FILE.as_posix(), True)
 
         win = Gtk.Window(application=self)
         win.set_title("Device Menu Test")
         win.set_default_size(400, 800)
         win.set_resizable(False)
 
+        if CSS_FILE.exists():
+            self.apply_css(CSS_FILE.as_posix(), True)
         
         device_menu = DeviceMenu()
         win.set_child(device_menu)
@@ -41,6 +43,8 @@ if __name__ == '__main__':
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     GLib.timeout_add(10, loop_step, loop)
+
+    logging.basicConfig(level=logging.INFO)
 
     # Run with `PYTHONPATH=src python3 src/testDeviceMenu.py`
     app = TestApp(instance_name='py_desktop_test_device_menu')
