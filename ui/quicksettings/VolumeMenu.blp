@@ -37,6 +37,7 @@ template $VolumeMenu : Box {
     Label {
         styles ["caption"]
         label: bind template.active_device_label;
+        visible: bind revealer.child-revealed inverted;
         halign: start;
         ellipsize: end;
         max-width-chars: 40;

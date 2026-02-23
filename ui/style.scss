@@ -60,6 +60,14 @@ button {
     }
 }
 
+// Reset for ToggleButtons used as items
+togglebutton.item {
+    background: none; box-shadow: none; border: none;
+    padding: 8px 12px 8px 20px; // Match .item padding
+    &:checked { background-color: $active; color: $accent; }
+    &:hover { background-color: $hover; }
+}
+
 // --- The ".panel-header" Class (Volume/Brightness Master Row) ---
 .panel-header {
     // FIX: Smaller padding (8px) so it sits "outside" the items
@@ -100,9 +108,8 @@ button {
 .caption {
     font-size: 0.9em;
     color: string.unquote("alpha(#{$fg}, 0.6)");
-    margin-top: -4px;
-    margin-bottom: 8px;
-    margin-left: 12px; // Align with general text flow
+    margin-top: -16px;
+    margin-left: 76px; // Align with general text flow
 }
 
 // ==============================================
@@ -184,12 +191,4 @@ popover > contents {
 
 .overlay {
     background-color: string.unquote("alpha(#{$bg}, 0.3)");
-}
-
-// Reset for ToggleButtons used as items
-togglebutton.item {
-    background: none; box-shadow: none; border: none;
-    padding: 8px 12px 8px 20px; // Match .item padding
-    &:checked { background-color: $active; color: $accent; }
-    &:hover { background-color: $hover; }
 }
