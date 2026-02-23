@@ -64,6 +64,12 @@ watch:
     @echo "👀 Watching {{ui_dir}} for changes..."
     @find {{ui_dir}} -name "*.blp" -o -name "*.scss" | entr -r sh -c 'just ui styles'
 
+# Watch source and UI, restarting app on change
+dev:
+    @echo "👀 Watching source and UI..."
+    @find {{src_dir}} {{ui_dir}} -name "*.py" -o -name "*.blp" -o -name "*.scss" \
+      | entr -r just build run
+
 update-typings:
     rm -f {{typelib_stamp}}
     just typings
