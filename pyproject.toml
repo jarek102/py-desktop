@@ -1,0 +1,13 @@
+[tool.basedpyright]
+# Directories to include in type checking
+include = ["src", "tests"]
+# Equivalent to python.analysis.extraPaths in VS Code (stubs and source paths for imports)
+extraPaths = ["src", "generated/typings"]
+
+# The strength of checking (options: off, basic, standard, strict, all)
+typeCheckingMode = "standard"
+
+# Disable errors for missing imports and missing module sources
+# This is especially useful for dynamically generated GObject Introspection bindings like `gi.repository`.
+# reportMissingImports = false
+reportMissingModuleSource = false
