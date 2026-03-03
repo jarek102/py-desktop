@@ -1,14 +1,19 @@
 using Gtk 4.0;
 
-template $VolumeMenu : Box {
+template $VolumeMenu: Box {
     orientation: vertical;
 
     Box header {
-        styles ["panel-header"]
+        styles [
+            "panel-header",
+        ]
 
         // 1. Icon (Fixed Width)
         Button icon {
-            styles ["fixed-icon"] 
+            styles [
+                "fixed-icon",
+            ]
+
             icon-name: bind template.icon_name;
             clicked => $toggle_mute();
         }
@@ -18,6 +23,7 @@ template $VolumeMenu : Box {
             hexpand: true;
             valign: center;
             draw-value: false;
+
             adjustment: Adjustment {
                 lower: 0;
                 upper: 1.0;
@@ -27,7 +33,10 @@ template $VolumeMenu : Box {
 
         // 3. Expand Arrow (Fixed Width)
         Button expand {
-            styles ["fixed-icon"]
+            styles [
+                "fixed-icon",
+            ]
+
             icon-name: "go-down-symbolic";
             clicked => $toggle_reveal();
         }
@@ -35,7 +44,10 @@ template $VolumeMenu : Box {
 
     // Label moved back here (Subtle Caption)
     Label {
-        styles ["caption"]
+        styles [
+            "caption",
+        ]
+
         label: bind template.active_device_label;
         visible: bind revealer.child-revealed inverted;
         halign: start;
@@ -45,7 +57,7 @@ template $VolumeMenu : Box {
 
     Revealer revealer {
         reveal-child: false;
-        
+
         Box device_list {
             orientation: vertical;
         }

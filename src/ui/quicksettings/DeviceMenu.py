@@ -32,7 +32,7 @@ class DeviceMenu(Gtk.Box):
         super().__init__(**kwargs)
 
 
-        self.theme_service = ThemeService()
+        self.theme_service = ThemeService.get_default()
         self.power_profile_service = PowerProfileService()
 
         # Bind theme properties directly

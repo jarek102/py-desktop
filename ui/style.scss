@@ -1,194 +1,268 @@
  @use "sass:string";
 
-// --- Theme Variables ---
-$bg: string.unquote(" @window_bg_color");
-$fg: string.unquote(" @window_fg_color");
-$accent: string.unquote(" @accent_color");
-$popover-bg: string.unquote(" @popover_bg_color");
+ // --- Theme Variables ---
+ $bg: string.unquote(" @window_bg_color");
+ $fg: string.unquote(" @window_fg_color");
+ $accent: string.unquote(" @accent_color");
+ $popover-bg: string.unquote(" @popover_bg_color");
 
-// --- Derived Variables ---
-$hover: string.unquote("alpha(#{$fg}, 0.08)");
-$active: string.unquote("alpha(#{$fg}, 0.12)");
-$border: string.unquote("alpha(#{$fg}, 0.15)");
+ // --- Derived Variables ---
+ $hover: string.unquote("alpha(#{$fg}, 0.08)");
+ $active: string.unquote("alpha(#{$fg}, 0.12)");
+ $border: string.unquote("alpha(#{$fg}, 0.15)");
 
-$radius: 12px;
-$radius-sm: 8px;
-$radius-pill: 99px;
-$spacing: 12px;
+ $radius: 12px;
+ $radius-sm: 8px;
+ $radius-pill: 99px;
+ $spacing: 12px;
 
-// ==============================================
-//    RESET & UTILITIES
-// ==============================================
+ // ==============================================
+ //    RESET & UTILITIES
+ // ==============================================
 
-* {
-    selection { background-color: $accent; color: $bg; }
-}
+ * {
+     selection {
+         background-color: $accent;
+         color: $bg;
+     }
+ }
 
-button {
-    background: none;
-    box-shadow: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-    color: $fg;
-    min-height: 0;
-    min-width: 0;
-}
+ button {
+     background: none;
+     box-shadow: none;
+     border: none;
+     padding: 0;
+     margin: 0;
+     color: $fg;
+     min-height: 0;
+     min-width: 0;
+ }
 
-// --- The ".item" Class (List Rows - Audio, Bluetooth, Monitors) ---
-.item {
-    // FIX: Increased left padding (20px) to indent items relative to the header.
-    // This fixes the "Reverse Tree" look.
-    padding: 8px 12px 8px 20px; 
-    border-radius: $radius-sm;
-    transition: background-color 0.2s;
-    
-    &:hover { background-color: $hover; }
-    
-    // Unified Active State
-    &:checked,
-    &.active { 
-        background-color: $active; 
-        color: $accent; 
-        image, label { color: $accent; }
-    }
+ // --- The ".item" Class (List Rows - Audio, Bluetooth, Monitors) ---
+ .item {
+     // FIX: Increased left padding (20px) to indent items relative to the header.
+     // This fixes the "Reverse Tree" look.
+     padding: 8px 12px 8px 20px;
+     border-radius: $radius-sm;
+     transition: background-color 0.2s;
 
-    button {
-        padding: 4px;
-        border-radius: $radius-sm;
-        &:hover { background-color: string.unquote("alpha(#{$fg}, 0.1)"); }
-    }
-}
+     &:hover {
+         background-color: $hover;
+     }
 
-// Reset for ToggleButtons used as items
-togglebutton.item {
-    background: none; box-shadow: none; border: none;
-    padding: 8px 12px 8px 20px; // Match .item padding
-    &:checked { background-color: $active; color: $accent; }
-    &:hover { background-color: $hover; }
-}
+     // Unified Active State
+     &:checked,
+     &.active {
+         background-color: $active;
+         color: $accent;
 
-// --- The ".panel-header" Class (Volume/Brightness Master Row) ---
-.panel-header {
-    // FIX: Smaller padding (8px) so it sits "outside" the items
-    padding: 4px 8px; 
-    border-radius: $radius-sm;
-    transition: background-color 0.2s;
-    min-height: 40px; 
+         image,
+         label {
+             color: $accent;
+         }
+     }
 
-    &:hover { background-color: $hover; }
+     button {
+         padding: 4px;
+         border-radius: $radius-sm;
 
-    > button {
-        padding: 4px;
-        border-radius: $radius-sm;
-        margin-right: 8px;
-        &:last-child { margin-right: 0; margin-left: 8px; }
-    }
-    
-    scale { margin: 0 8px; }
-}
+         &:hover {
+             background-color: string.unquote("alpha(#{$fg}, 0.1)");
+         }
+     }
+ }
 
-// --- Power Grid (Shutdown, Logout) ---
-.power-grid {
-    margin-bottom: $spacing;
-    
-    button {
-        padding: 12px;
-        border-radius: $radius-sm;
-        transition: all 0.2s;
-        
-        &:hover {
-            background-color: $active;
-            color: $accent;
-        }
-    }
-}
+ // Reset for ToggleButtons used as items
+ togglebutton.item {
+     background: none;
+     box-shadow: none;
+     border: none;
+     padding: 8px 12px 8px 20px; // Match .item padding
 
-// --- Captions (Labels below headers) ---
-.caption {
-    font-size: 0.9em;
-    color: string.unquote("alpha(#{$fg}, 0.6)");
-    margin-top: -16px;
-    margin-left: 76px; // Align with general text flow
-}
+     &:checked {
+         background-color: $active;
+         color: $accent;
+     }
 
-// ==============================================
-//    COMPONENT STYLES
-// ==============================================
+     &:hover {
+         background-color: $hover;
+     }
+ }
 
-window.device-menu {
-    background-color: transparent;
+ // --- The ".panel-header" Class (Volume/Brightness Master Row) ---
+ .panel-header {
+     // FIX: Smaller padding (8px) so it sits "outside" the items
+     padding: 4px 8px;
+     border-radius: $radius-sm;
+     transition: background-color 0.2s;
+     min-height: 40px;
 
-    .menu-content {
-        background-color: $popover-bg;
-        color: $fg;
-        border-radius: $radius;
-        padding: $spacing;
-        margin: $spacing; 
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    }
-}
+     &:hover {
+         background-color: $hover;
+     }
 
-// --- Bar & Widgets ---
-window.bar {
-    background-color: transparent;
+     >button {
+         padding: 4px;
+         border-radius: $radius-sm;
+         margin-right: 8px;
 
-    .module {
-        background-color: $bg;
-        border-radius: $radius;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
-        padding: 4px 8px; 
-        margin: $spacing 0;
+         &:last-child {
+             margin-right: 0;
+             margin-left: 8px;
+         }
+     }
 
-        &.left { margin-left: $spacing; }
-        &.right { margin-right: $spacing; }
-    }
-    
-    .clock-pill, .system-pill {
-        padding: 0 12px;
-        min-height: 28px;
-        border-radius: $radius-pill;
-        font-weight: bold;
-        transition: background-color 0.2s;
-        &:hover { background-color: $hover; }
-    }
-    
-    .tray button {
-        padding: 4px;
-        border-radius: 4px;
-        &:hover { background-color: $hover; }
-    }
+     scale {
+         margin: 0 8px;
+     }
+ }
 
-    .workspaces { margin: 0; padding: 0; }
-    
-    .workspace-button.dot {
-        min-width: 12px; min-height: 12px; padding: 0; margin: 0 4px;
-        border-radius: 999px;
-        background-color: string.unquote("alpha(#{$fg}, 0.2)");
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        
-        label { font-size: 0; color: transparent; opacity: 0; }
+ // --- Power Grid (Shutdown, Logout) ---
+ .power-grid {
+     margin-bottom: $spacing;
 
-        &:hover { background-color: string.unquote("alpha(#{$fg}, 0.5)"); min-width: 16px; }
-        &.active { min-width: 32px; background-color: $accent; color: $bg; }
-    }
-}
+     button {
+         padding: 12px;
+         border-radius: $radius-sm;
+         transition: all 0.2s;
 
-calendar {
-    color: $fg;
-    background: transparent;
-    > header { color: $accent; font-weight: bold; }
-    &:selected { background-color: $accent; border-radius: 4px; color: $bg; }
-}
+         &:hover {
+             background-color: $active;
+             color: $accent;
+         }
+     }
+ }
 
-popover > contents {
-    background-color: $popover-bg;
-    color: $fg;
-    border-radius: $radius;
-    padding: $spacing;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-}
+ // --- Captions (Labels below headers) ---
+ .caption {
+     font-size: 0.9em;
+     color: string.unquote("alpha(#{$fg}, 0.6)");
+     margin-top: -16px;
+     margin-left: 76px; // Align with general text flow
+ }
 
-.overlay {
-    background-color: string.unquote("alpha(#{$bg}, 0.3)");
-}
+ // ==============================================
+ //    COMPONENT STYLES
+ // ==============================================
+
+ window.device-menu {
+     background-color: transparent;
+
+     .menu-content {
+         background-color: $popover-bg;
+         color: $fg;
+         border-radius: $radius;
+         padding: $spacing;
+         margin: $spacing;
+         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+     }
+ }
+
+ // --- Bar & Widgets ---
+ window.bar {
+     background-color: transparent;
+
+     .module {
+         background-color: $bg;
+         border-radius: $radius;
+         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+         padding: 4px 8px;
+         margin: $spacing 0;
+
+         &.left {
+             margin-left: $spacing;
+         }
+
+         &.right {
+             margin-right: $spacing;
+         }
+     }
+
+     .clock-pill,
+     .system-pill {
+         padding: 0 12px;
+         min-height: 28px;
+         border-radius: $radius-pill;
+         font-weight: bold;
+         transition: background-color 0.2s;
+
+         &:hover {
+             background-color: $hover;
+         }
+     }
+
+     .tray button {
+         padding: 4px;
+         border-radius: 4px;
+
+         &:hover {
+             background-color: $hover;
+         }
+     }
+
+     .workspaces {
+         margin: 0;
+         padding: 0;
+     }
+
+     .workspace-button.dot {
+         min-width: 12px;
+         min-height: 12px;
+         padding: 0;
+         margin: 0 4px;
+         border-radius: 999px;
+         background-color: string.unquote("alpha(#{$fg}, 0.2)");
+         transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+         label {
+             font-size: 0;
+             color: transparent;
+             opacity: 0;
+         }
+
+         &:hover {
+             background-color: string.unquote("alpha(#{$fg}, 0.5)");
+             min-width: 16px;
+         }
+
+         &.active {
+             min-width: 32px;
+             background-color: $accent;
+             color: $bg;
+         }
+     }
+ }
+
+ calendar {
+     color: $fg;
+     background: transparent;
+
+     >header {
+         color: $accent;
+         font-weight: bold;
+     }
+
+     &:selected {
+         background-color: $accent;
+         border-radius: 4px;
+         color: $bg;
+     }
+ }
+
+ popover>contents {
+     background-color: $popover-bg;
+     color: $fg;
+     border-radius: $radius;
+     padding: $spacing;
+     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+ }
+
+ .overlay {
+     background-color: string.unquote("alpha(#{$bg}, 0.3)");
+ }
+
+ // ==============================================
+ //    THEME OVERRIDES
+ // ==============================================
+ @import "themes/lavanda";
+ @import "themes/fluent";

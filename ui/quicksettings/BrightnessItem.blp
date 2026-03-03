@@ -1,7 +1,10 @@
 using Gtk 4.0;
 
-template $BrightnessItem : Box {
-    styles ["item"]
+template $BrightnessItem: Box {
+    styles [
+        "item",
+    ]
+
     spacing: 12;
 
     Image {
@@ -25,7 +28,7 @@ template $BrightnessItem : Box {
         Scale {
             hexpand: true;
             // FIX: Restore width-request to prevent it from being "too wide"
-            width-request: 100; 
+            width-request: 100;
             draw-value: false;
 
             adjustment: Adjustment {
@@ -39,7 +42,17 @@ template $BrightnessItem : Box {
             // Keep marks as requested
             marks [
                 mark (0, bottom),
+                mark (10, bottom),
+                mark (20, bottom),
+                mark (30, bottom),
+                mark (40, bottom),
+                mark (50, bottom),
+                mark (60, bottom),
+                mark (70, bottom),
+                mark (80, bottom),
+                mark (90, bottom),
                 mark (100, bottom)
+                ,
             ]
         }
     }

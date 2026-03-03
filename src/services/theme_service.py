@@ -14,21 +14,48 @@ DEFAULT_THEMES_INDEX_PATH = os.path.expanduser("~/.config/theme-switcher/themes.
 
 
 class ThemeService(GObject.Object):
+    _instance = None
     _is_dark = False
+    _theme_family = "default"
+
+    @classmethod
+    def get_default(cls) -> "ThemeService":
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
 
     def __init__(
         self,
         settings: Gio.Settings | None = None,
         themes_index_path: str | None = None,
         counterpart_map: dict[str, dict[str, str | None]] | None = None,
+        theme_family_map: dict[str, str] | None = None,
     ):
         super().__init__()
+        if ThemeService._instance is not None:
+             raise RuntimeError("ThemeService is a singleton. Use ThemeService.get_default()")
+        ThemeService._instance = self
+
         self._settings = settings or Gio.Settings.new("org.gnome.desktop.interface")
         self._themes_index_path = themes_index_path or DEFAULT_THEMES_INDEX_PATH
-        self._counterpart_map = counterpart_map if counterpart_map is not None else self._load_counterpart_map()
+        
+        # Load maps
+        maps = self._load_theme_maps() if (counterpart_map is None or theme_family_map is None) else (counterpart_map, theme_family_map)
+        self._counterpart_map = counterpart_map if counterpart_map is not None else maps[0]
+        self._theme_family_map = theme_family_map if theme_family_map is not None else maps[1]
 
         self._settings.connect("changed::color-scheme", self._sync_from_settings)
+        self._settings.connect("changed::gtk-theme", self._sync_theme_family)
         self._sync_from_settings()
+        self._sync_theme_family()
+
+    @GObject.Property(type=str, default="default")
+    def theme_family(self):
+        return self._theme_family
+        
+    @theme_family.setter
+    def theme_family(self, value: str):
+        self._theme_family = value
 
     @GObject.Property(type=bool, default=False)
     def is_dark(self):
@@ -60,21 +87,23 @@ class ThemeService(GObject.Object):
             self._settings.set_string("gtk-theme", next_theme)
 
 
-    def _load_counterpart_map(self) -> dict[str, dict[str, str | None]]:
+    def _load_theme_maps(self) -> tuple[dict[str, dict[str, str | None]], dict[str, str]]:
         if not os.path.exists(self._themes_index_path):
             _log.info("Theme index not found at %s; counterpart switching disabled", self._themes_index_path)
-            return {}
+            return {}, {}
 
         try:
             with open(self._themes_index_path, "r", encoding="utf-8") as file_obj:
                 data = json.load(file_obj)
         except (OSError, json.JSONDecodeError) as error:
             _log.warning("Failed to load theme index from %s: %s", self._themes_index_path, error)
-            return {}
+            return {}, {}
 
         counterpart_map: dict[str, dict[str, str | None]] = {}
+        theme_family_map: dict[str, str] = {}
+        
         if not isinstance(data, dict):
-            return counterpart_map
+            return counterpart_map, theme_family_map
 
         for family_data in data.values():
             if not isinstance(family_data, dict):
@@ -86,6 +115,9 @@ class ThemeService(GObject.Object):
             for variant_name, variant_data in variants.items():
                 if not isinstance(variant_data, dict):
                     continue
+                # Map variant back to its normalised family alias (e.g. Arc, Colloid)
+                theme_family_map[variant_name] = family_data.get("description", {}).get("family_label", variant_name.split("-")[0]).lower()
+                
                 raw_counterparts = variant_data.get("counterparts", {})
                 if not isinstance(raw_counterparts, dict):
                     raw_counterparts = {}
@@ -95,7 +127,7 @@ class ThemeService(GObject.Object):
                     "light": raw_counterparts.get("light"),
                 }
 
-        return counterpart_map
+        return counterpart_map, theme_family_map
 
 
     def _resolve_theme_for_mode(self, current_theme: str, target_dark: bool) -> str | None:
@@ -116,6 +148,22 @@ class ThemeService(GObject.Object):
         """Syncs the local is_dark property from GSettings."""
         color_scheme = self._settings.get_string("color-scheme")
         self.is_dark = color_scheme == "prefer-dark"
+
+    def _sync_theme_family(self, *_args) -> None:
+        """Syncs the local theme_family property based on current GTK theme."""
+        current_theme = self._settings.get_string("gtk-theme")
+        if not current_theme:
+            self.theme_family = "default"
+            return
+            
+        # Try finding in the parsed index map first
+        resolved_family = self._theme_family_map.get(current_theme)
+        
+        # Fallback to primitive split if not tracked by themes.json yet
+        if not resolved_family:
+            resolved_family = current_theme.split("-")[0].lower()
+            
+        self.theme_family = resolved_family
 
     def toggle_mode(self) -> None:
         """Toggles between prefer-dark and prefer-light."""

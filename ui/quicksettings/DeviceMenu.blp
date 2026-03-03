@@ -19,11 +19,7 @@ template $DeviceMenu: Box {
                 column: 2;
             }
 
-            hexpand: false;
-
-            Image {
-                icon-name: "system-log-out-symbolic";
-            }
+            icon-name: "system-log-out-symbolic";
         }
 
         Button sleep {
@@ -36,11 +32,7 @@ template $DeviceMenu: Box {
                 column: 3;
             }
 
-            hexpand: false;
-
-            Image {
-                icon-name: "system-suspend-symbolic";
-            }
+            icon-name: "system-suspend-symbolic";
         }
 
         Button reboot {
@@ -53,11 +45,7 @@ template $DeviceMenu: Box {
                 column: 4;
             }
 
-            hexpand: false;
-
-            Image {
-                icon-name: "system-reboot-symbolic";
-            }
+            icon-name: "system-reboot-symbolic";
         }
 
         Button poweroff {
@@ -70,50 +58,64 @@ template $DeviceMenu: Box {
                 column: 5;
             }
 
-            hexpand: false;
-
-            Image {
-                icon-name: "system-shutdown-symbolic";
-            }
+            icon-name: "system-shutdown-symbolic";
         }
 
-        Box {
-            visible: true;
-
-            $FeatureToggle {
-                label: "Dark Mode";
-                icon-name: "night-light-symbolic";
-                active: bind template.is_dark_mode bidirectional;
-            }
+        ToggleButton dark_mode {
+            name: "dark_mode";
+            tooltip-text: "Theme";
+            icon-name: "night-light-symbolic";
+            active: bind template.is_dark_mode bidirectional;
 
             layout {
                 row: 1;
-                column: 0;
-                column-span: 6;
+                column: 2;
             }
         }
 
-        Box {
+        ToggleButton power_saver {
+            name: "power_saver";
+            tooltip-text: "Power Saver";
+            icon-name: "power-profile-power-saver-symbolic";
+            active: bind template.power_saver_active;
+            clicked => $power_saver_clicked();
             visible: bind template.power_profiles_visible;
 
-            ToggleButton {
-                label: "Saver";
-                active: bind template.power_saver_active;
-                clicked => $power_saver_clicked();
+            layout {
+                row: 1;
+                column: 3;
             }
+        }
 
-            ToggleButton {
-                label: "Balanced";
-                active: bind template.balanced_active;
-                clicked => $balanced_clicked();
+        ToggleButton balanced {
+            name: "balanced";
+            tooltip-text: "Balanced";
+            icon-name: "power-profile-balanced-symbolic";
+            active: bind template.balanced_active;
+            clicked => $balanced_clicked();
+            visible: bind template.power_profiles_visible;
+
+            layout {
+                row: 1;
+                column: 4;
             }
+        }
 
-            ToggleButton {
-                label: "Performance";
-                active: bind template.performance_active;
-                clicked => $performance_clicked();
+        ToggleButton performance {
+            name: "performance";
+            tooltip-text: "Performance";
+            icon-name: "power-profile-performance-symbolic";
+            active: bind template.performance_active;
+            clicked => $performance_clicked();
+            visible: bind template.power_profiles_visible;
+
+            layout {
+                row: 1;
+                column: 5;
             }
+        }
 
+        $BrightnessMenu {
             layout {
                 row: 2;
                 column: 0;
@@ -121,7 +123,7 @@ template $DeviceMenu: Box {
             }
         }
 
-        $BrightnessMenu {
+        $VolumeMenu audio_menu {
             layout {
                 row: 3;
                 column: 0;
@@ -129,7 +131,7 @@ template $DeviceMenu: Box {
             }
         }
 
-        $VolumeMenu audio_menu {
+        $VolumeMenu mic_menu {
             layout {
                 row: 4;
                 column: 0;
@@ -137,17 +139,9 @@ template $DeviceMenu: Box {
             }
         }
 
-        $VolumeMenu mic_menu {
-            layout {
-                row: 5;
-                column: 0;
-                column-span: 6;
-            }
-        }
-
         $BluetoothMenu {
             layout {
-                row: 6;
+                row: 5;
                 column: 0;
                 column-span: 6;
             }

@@ -21,7 +21,7 @@
 * Don't use very short variable names, execept for iterators.
 
 
-1. **Astal Over GTK:**
+1. **Astal vs GTK:**
 * Prefer `astal` namespace widgets over `Gtk` namespace when reactivity is needed.
 * For desktop shell windows use `Astal.Window` instead of `Gtk.Window`, use `Gtk.Window` for settings and tool/utility windows.
 * Astal windows provide essential desktop shell features (anchors, exclusivity, layers) that standard GTK windows lack.

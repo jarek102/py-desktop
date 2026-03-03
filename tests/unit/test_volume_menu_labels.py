@@ -1,3 +1,4 @@
+import versions
 from ui.quicksettings.VolumeMenu import VolumeMenu
 
 

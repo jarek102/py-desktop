@@ -20,7 +20,25 @@ class App(Astal.Application):
             instance_name = instance_name,
             application_id='com.github.jarek102.py-desktop',
             **kwargs)
+            
+        from services.theme_service import ThemeService
+        self.theme_service = ThemeService.get_default()
+        self.current_theme_class = f"theme-{self.theme_service.theme_family}"
+        
         self.connect('activate', self.on_activate)
+        self.connect('window-added', self._on_window_added)
+        self.theme_service.connect('notify::theme-family', self._on_theme_family_changed)
+        
+    def _on_theme_family_changed(self, *_args):
+        new_class = f"theme-{self.theme_service.theme_family}"
+        if self.current_theme_class != new_class:
+            for win in self.get_windows():
+                win.remove_css_class(self.current_theme_class)
+                win.add_css_class(new_class)
+            self.current_theme_class = new_class
+
+    def _on_window_added(self, _app, window):
+        window.add_css_class(self.current_theme_class)
     
     def on_activate(self,_):
         self.apply_css(CSS_FILE.as_posix(), True)

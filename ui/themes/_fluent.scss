@@ -1,0 +1,53 @@
+// _fluent.scss
+// Flat architecture with no radiuses (aggressive sharp corners)
+
+window.theme-fluent {
+
+    // Override structural elements to 0 or very small radiuses
+    // 4px for outer containers, 2px for buttons (Microsoft fluent style)
+
+    .menu-content,
+    .module,
+    popover>contents {
+        border-radius: 4px;
+    }
+
+    .item,
+    togglebutton.item,
+    .panel-header>button,
+    .power-grid button,
+    .tray button {
+        border-radius: 2px;
+    }
+
+    .panel-header {
+        border-radius: 2px;
+    }
+
+    .clock-pill,
+    .system-pill {
+        border-radius: 4px;
+    }
+
+    window.bar {
+        .workspace-button.dot {
+            border-radius: 2px;
+
+            &:hover {
+                min-width: 16px;
+                border-radius: 2px;
+            }
+
+            &.active {
+                min-width: 32px;
+                border-radius: 2px;
+            }
+        }
+    }
+
+    calendar {
+        &:selected {
+            border-radius: 2px;
+        }
+    }
+}
