@@ -15,11 +15,18 @@ class App(Astal.Application):
     overlays = {}
     active_popup = None
     
-    def __init__(self,instance_name = "py_desktop", **kwargs):
+    def __init__(
+        self,
+        instance_name="py_desktop",
+        window_rules_override: str | None = None,
+        **kwargs,
+    ):
         super().__init__(
             instance_name = instance_name,
             application_id='com.github.jarek102.py-desktop',
             **kwargs)
+        self._window_rules_override = window_rules_override
+        self._window_organizer = None
             
         from services.theme_service import ThemeService
         self.theme_service = ThemeService.get_default()
@@ -48,6 +55,15 @@ class App(Astal.Application):
                 self.add_window(self.bars[mon])
         for bar in self.bars.values():
             bar.present()
+
+        from services.Compositor import Compositor
+        from services.WindowOrganizer import WindowOrganizer
+
+        compositor = Compositor.get_default()
+        if compositor.is_niri and self._window_organizer is None:
+            organizer = WindowOrganizer(rules_path_override=self._window_rules_override)
+            # organizer_ref held on self to prevent GC while app is running.
+            self._window_organizer = organizer
         
     def _ensure_overlays(self):
         if not self.overlays:

@@ -6,5 +6,18 @@
       <summary>Bluetooth Favorites</summary>
       <description>List of MAC addresses for favorite bluetooth devices</description>
     </key>
+    <key name="window-organizer-enabled" type="b">
+      <default>true</default>
+      <summary>Enable Window Organizer</summary>
+      <description>When true, automatically place new windows according to rules.kdl</description>
+    </key>
+    <key name="window-rules-path" type="s">
+      <default>''</default>
+      <summary>Window Rules File Path</summary>
+      <description>
+        Path to a KDL file containing window-rule nodes. When empty, the service
+        autodiscovers ~/.config/niri/cfg/rules.kdl then ~/.config/niri/config.kdl.
+      </description>
+    </key>
   </schema>
 </schemalist>

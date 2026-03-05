@@ -44,6 +44,12 @@ def parse_args():
         default="py_desktop",
         help="Set application instance name.",
     )
+    parser.add_argument(
+        "--window-rules",
+        default=None,
+        metavar="PATH",
+        help="Override the window rules KDL file path (takes priority over dconf).",
+    )
     args, _unknown = parser.parse_known_args()
     return args
 
@@ -87,6 +93,9 @@ if __name__ == "__main__":
     asyncio.set_event_loop(loop)
     GLib.timeout_add(10, loop_step, loop)
 
-    app = App(instance_name=args.instance_name)
+    app = App(
+        instance_name=args.instance_name,
+        window_rules_override=args.window_rules,
+    )
     app.acquire_socket()
     sys.exit(app.run(None))
