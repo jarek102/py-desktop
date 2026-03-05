@@ -4,6 +4,11 @@ import unittest
 import sys
 import types
 
+# Preserve original modules so this test file does not pollute global import state.
+_ORIG_GI = sys.modules.get("gi")
+_ORIG_GI_REPOSITORY = sys.modules.get("gi.repository")
+_ORIG_VERSIONS = sys.modules.get("versions")
+
 versions_mock = types.ModuleType("versions")
 sys.modules["versions"] = versions_mock
 
@@ -101,6 +106,22 @@ import importlib
 
 importlib.reload(theme_service)
 
+# Restore global import state immediately after loading the target module.
+if _ORIG_GI is None:
+    sys.modules.pop("gi", None)
+else:
+    sys.modules["gi"] = _ORIG_GI
+
+if _ORIG_GI_REPOSITORY is None:
+    sys.modules.pop("gi.repository", None)
+else:
+    sys.modules["gi.repository"] = _ORIG_GI_REPOSITORY
+
+if _ORIG_VERSIONS is None:
+    sys.modules.pop("versions", None)
+else:
+    sys.modules["versions"] = _ORIG_VERSIONS
+
 
 COUNTERPART_MAP = {
     "Adwaita": {"dark": "Adwaita-dark", "light": None},
@@ -112,6 +133,7 @@ COUNTERPART_MAP = {
 
 class TestThemeService(unittest.TestCase):
     def setUp(self):
+        theme_service.ThemeService._instance = None
         self.mock_settings = Gio_mock.Settings("org.gnome.desktop.interface")
         self.mock_settings.set_string("color-scheme", "default")
         self.mock_settings.set_string("gtk-theme", "Adwaita")
