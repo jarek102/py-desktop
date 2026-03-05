@@ -67,7 +67,7 @@ template $Bar: Astal.Window {
                         icon-name: bind template.volume-icon;
 
                         EventControllerScroll {
-                            flags: vertical;
+                            flags: vertical | discrete;
                             scroll => $on_volume_scroll();
                         }
                     }

@@ -20,20 +20,20 @@
  //    RESET & UTILITIES
  // ==============================================
 
- * {
-     selection {
-         background-color: $accent;
-         color: $bg;
-     }
- }
+//  * {
+//      selection {
+//          background-color: $accent;
+//          color: $bg;
+//      }
+//  }
 
  button {
-     background: none;
-     box-shadow: none;
-     border: none;
+    //  background: none;
+    //  box-shadow: none;
+    //  border: none;
      padding: 0;
      margin: 0;
-     color: $fg;
+    //  color: $fg;
      min-height: 0;
      min-width: 0;
  }
@@ -91,8 +91,7 @@
 
  // --- The ".panel-header" Class (Volume/Brightness Master Row) ---
  .panel-header {
-     // FIX: Smaller padding (8px) so it sits "outside" the items
-     padding: 4px 8px;
+     margin: 4px 8px;
      border-radius: $radius-sm;
      transition: background-color 0.2s;
      min-height: 40px;

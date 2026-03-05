@@ -27,8 +27,6 @@ template $BrightnessItem: Box {
 
         Scale {
             hexpand: true;
-            // FIX: Restore width-request to prevent it from being "too wide"
-            width-request: 100;
             draw-value: false;
 
             adjustment: Adjustment {
@@ -39,7 +37,6 @@ template $BrightnessItem: Box {
                 value: bind template.brightness bidirectional;
             };
 
-            // Keep marks as requested
             marks [
                 mark (0, bottom),
                 mark (10, bottom),
