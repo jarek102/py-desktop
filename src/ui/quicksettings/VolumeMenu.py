@@ -6,7 +6,17 @@ from utils import Blueprint
 SYNC = GObject.BindingFlags.SYNC_CREATE
 BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
+def _is_disconnected_display_sink(endpoint: Wp.Endpoint) -> bool:
+    """Filter out GPU display audio sinks whose display is disconnected.
 
+    ProAudio GPU sinks (node.name contains '.pro-output-') that lack an
+    object.path are bridge nodes created for disconnected HDMI/DP ports.
+    Connected display sinks get a real ALSA PCM node with object.path set.
+    """
+    node_name = endpoint.get_pw_property("node.name") or ""
+    if ".pro-output-" not in node_name:
+        return False
+    return not endpoint.get_pw_property("object.path")
 
 @Blueprint("quicksettings/VolumeMenu.blp")
 class VolumeMenu(Gtk.Box):
