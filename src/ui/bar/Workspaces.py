@@ -1,7 +1,7 @@
 import logging
 import versions
 from gi.repository import Gtk, GObject, Gdk
-from utils import Blueprint
+from utils import Blueprint, ScrollThrottle
 from services.Compositor import Compositor
 
 _log = logging.getLogger("py_desktop.workspaces")
@@ -37,14 +37,12 @@ class WorkspaceButton(Gtk.Button):
             lambda _binding, value: (True, str(value) if value is not None else ""),
         )
         
-        self.connect("clicked", self.on_clicked)
+        self.connect("clicked", self._on_clicked)
         
         # Listen for active state changes (specifically for Niri)
         self.workspace.connect("notify::is-active", self._update_state)
         self._update_state()
-        _log.info("WorkspaceButton init id=%s name=%s", self.id, self.name)
-
-    def on_clicked(self, _):
+    def _on_clicked(self, _):
         _log.info("WorkspaceButton clicked id=%s name=%s", self.id, self.name)
         self.workspace.focus()
         
@@ -63,12 +61,18 @@ class Workspaces(Gtk.Box):
     def __init__(self):
         super().__init__()
         self.compositor = Compositor.get_default()
+        self._scroll_throttle = ScrollThrottle(threshold=1.0)
         self.compositor.connect("workspaces-changed", self.on_workspaces_changed)
         
         # Scroll to switch workspaces
-        scroll = Gtk.EventControllerScroll(flags=Gtk.EventControllerScrollFlags.VERTICAL)
-        scroll.connect("scroll", self.on_scroll)
-        self.add_controller(scroll)
+        scroll_controller = Gtk.EventControllerScroll(
+            flags=(
+                Gtk.EventControllerScrollFlags.VERTICAL
+                | Gtk.EventControllerScrollFlags.DISCRETE
+            )
+        )
+        scroll_controller.connect("scroll", self._on_scroll)
+        self.add_controller(scroll_controller)
         
         # Defer initial load until widget is mapped, so we can get the monitor
         self.connect("map", self._on_map)
@@ -88,14 +92,14 @@ class Workspaces(Gtk.Box):
             return
 
         gdk_monitor_id = root.get_monitor()
-        _log.info("Workspaces changed gdk_monitor_id=%s", gdk_monitor_id)
+        _log.debug("Workspaces changed gdk_monitor_id=%s", gdk_monitor_id)
 
         # Clear existing children
         while child := self.get_first_child():
             self.remove(child)
         
         workspaces_to_show = self.compositor.get_workspaces_for_monitor(gdk_id=gdk_monitor_id)
-        _log.info("Workspaces to show count=%s ids=%s", len(workspaces_to_show), [w.id for w in workspaces_to_show])
+        _log.debug("Workspaces to show count=%s ids=%s", len(workspaces_to_show), [w.id for w in workspaces_to_show])
             
         for ws in workspaces_to_show:
             self.append(WorkspaceButton(ws))
@@ -105,33 +109,47 @@ class Workspaces(Gtk.Box):
             if isinstance(child, WorkspaceButton):
                 child._update_state()
             child = child.get_next_sibling()
+        self._scroll_throttle.reset()
 
-    def on_scroll(self, controller, dx, dy):
-        _log.info("Workspaces scroll dx=%s dy=%s", dx, dy)
-        children = []
-        child = self.get_first_child()
-        while child:
-            if isinstance(child, WorkspaceButton):
-                children.append(child)
-            child = child.get_next_sibling()
-            
-        if not children:
-            _log.info("Workspaces scroll ignored: no children")
+    def _on_scroll(self, _controller, _dx: float, dy: float) -> None:
+        steps = self._scroll_throttle.feed(dy)
+        if steps == 0:
             return
 
-        active_index = -1
-        for i, btn in enumerate(children):
-            if btn.has_css_class("active"):
-                active_index = i
-                break
-        _log.info("Workspaces scroll active_index=%s total=%s", active_index, len(children))
-        
-        target_index = active_index
-        if dy > 0: target_index += 1
-        elif dy < 0: target_index -= 1
-        _log.info("Workspaces scroll target_index=%s", target_index)
-        
-        if 0 <= target_index < len(children):
-            target = children[target_index]
-            _log.info("Workspaces scroll focus id=%s name=%s", target.id, target.name)
-            children[target_index].workspace.focus()
+        _log.debug("Workspaces scroll steps=%s", steps)
+
+        root = self.get_root()
+        if root is None or not hasattr(root, "get_monitor"):
+            return
+
+        workspaces = self.compositor.get_workspaces_for_monitor(
+            gdk_id=root.get_monitor()
+        )
+        if not workspaces:
+            return
+
+        # Use model state — do NOT use CSS class to find active workspace.
+        focused_index = next(
+            (i for i, ws in enumerate(workspaces) if ws.get_property("is-focused")),
+            None,
+        )
+        if focused_index is None:
+            # Fallback: use is-active if no workspace reports is-focused.
+            focused_index = next(
+                (
+                    i
+                    for i, ws in enumerate(workspaces)
+                    if ws.get_property("is-active")
+                ),
+                0,
+            )
+
+        target_index = max(0, min(focused_index + steps, len(workspaces) - 1))
+
+        if target_index != focused_index:
+            _log.debug(
+                "Workspaces scroll: focusing index=%s id=%s",
+                target_index,
+                workspaces[target_index].id,
+            )
+            workspaces[target_index].focus()

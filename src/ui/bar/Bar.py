@@ -18,7 +18,7 @@ from gi.repository import (
 from ui.common.WindowManager import WindowManager
 from ui.bar.Workspaces import Workspaces
 from ui.bar.Launcher import Launcher
-from utils import Blueprint
+from utils import Blueprint, ScrollThrottle
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
 
@@ -43,6 +43,7 @@ class Bar(Astal.Window):
 
     def __init__(self,window_manager: Optional[WindowManager] = None,**kwargs) -> None:
         super().__init__(**kwargs)
+        self._volume_scroll_throttle = ScrollThrottle(threshold=0.5)
         
         self.window_manager = window_manager
 
@@ -170,12 +171,16 @@ class Bar(Astal.Window):
             self.window_manager.toggle_device_menu(self.get_monitor())
 
     @Gtk.Template.Callback()
-    def on_volume_scroll(self, _controller, _dx, dy) -> None:
+    def on_volume_scroll(self, _controller, _dx: float, dy: float) -> None:
+        steps = self._volume_scroll_throttle.feed(dy)
+        if steps == 0:
+            return
+
         speaker = AstalWp.get_default().get_default_speaker()
         if not speaker:
             return
 
-        if dy > 0:
-            speaker.set_volume(max(0, speaker.get_volume() - 0.05))
-        else:
-            speaker.set_volume(min(1.0, speaker.get_volume() + 0.05))
+        # Each step is ±5% volume. Positive dy = scroll down = volume down.
+        delta = steps * 0.05
+        new_volume = max(0.0, min(1.0, speaker.get_volume() - delta))
+        speaker.set_volume(new_volume)
