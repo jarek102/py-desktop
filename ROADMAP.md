@@ -76,16 +76,43 @@ Vala sources for Astal at `/home/jarek102/Projects/theme-selector/astal_niri/ast
 ---
 
 ## Phase 1b — OSD widget
-*Ready to start.*
+*Mostly complete.*
 
 Transient bottom-center pill showing volume / brightness / keyboard layout
-feedback. One OsdWindow per monitor, OsdService singleton, 1.5s auto-dismiss.
+feedback. Single OsdWindow, OsdService singleton, 1.5s auto-dismiss with
+timer reset on repeated triggers.
 
-- ⏳ OsdService singleton
-- ⏳ OsdWindow per-monitor Astal.Window
-- ⏳ Volume + mute triggers (via AstalWp notify::volume/mute)
-- ⏳ Brightness trigger (via BrightnessService notify::brightness)
-- ⏳ Keyboard layout trigger (NiriKbdService polling niri msg keyboard-layouts)
+- ✅ OsdService singleton (icon / value / label / visible GObject properties)
+- ✅ OsdWindow Astal.Window (overlay, bottom anchor, keymode: none)
+- ✅ Volume + mute triggers (AstalWp notify::volume / notify::mute)
+- ✅ Brightness trigger (wired via BrightnessService.get_default())
+- ✅ Auto-dismiss (1.5s, resets on repeated triggers)
+- 💤 Keyboard layout trigger — needs NiriKbdService
+- 💤 OSD game inhibit — defer until tested; design note: check
+  `Compositor` for fullscreen output before showing
+
+---
+
+## Phase 1f — BrightnessService singleton + DDC tuning
+*Complete.*
+
+- ✅ Singleton migration (`get_default()` pattern, matches OsdService/ThemeService)
+- ✅ `DDCProfile` dataclass: per-monitor `flags` + `timeout` applied to all
+  ddcutil subprocess calls for that monitor
+- ✅ `_DDC_PROFILES` dict keyed by manufacturer code from detect output:
+  `BNQ` → `--sleep-multiplier 3`, timeout 6.0s
+- ✅ Detect retry (up to 3 attempts, 0.5s pause between)
+- ✅ Wire BrightnessService into OsdService.start()
+- ✅ Suppress OSD on initialisation read (`service.busy` guard)
+
+### Key implementation notes
+
+- Manufacturer code extracted from `Monitor: MFG:Model:Serial` (first field)
+  in `ddcutil --terse detect` output. BenQ reports as `BNQ`.
+- `--noverify` is ddcutil's default — no need to add it explicitly.
+- `--sleep-multiplier` overrides dynamic-sleep; timeout scaled to 6s to match.
+- Class-level `monitors = []` bug fixed (was shared across instances);
+  `logging.basicConfig` removed from module scope.
 
 ---
 
@@ -119,10 +146,45 @@ working and committed. Future improvements:
 
 ---
 
-## Phase 2 — Extended features
+## Phase 2a — Display panel (Gigabyte M27Q-P USB control)
+*After Phase 1f. Integrate monctl USB protocol into py-desktop-2.*
+
+The Gigabyte M27Q-P uses a USB Billboard device (VID 0x2109 / PID 0x8886)
+for vendor OSD control — completely separate from DDC/CI. The monctl project
+(`~/Projects/monctl`) has a working `g27q.py` USB protocol implementation.
+
+**Motivation**: KVM switching, overdrive tuning per refresh rate, HDR
+preparation (when niri supports it). Brightness is a bonus secondary path.
+
+### Tasks
+
+- ⏳ Port `g27q.py` USB protocol into `src/services/` as `GigabyteMonitorService`
+  - Singleton; async USB control via `pyusb`
+  - Expose: `kvm_input`, `overdrive`, `brightness` as GObject properties
+  - Udev rule: `SUBSYSTEM=="usb", ATTR{idVendor}=="2109", ATTR{idProduct}=="8886", MODE="0666"`
+- ⏳ Display panel UI in DeviceMenu
+  - KVM source toggle (USB-B / USB-C)
+  - Overdrive selector (Off / Normal / Speed / PictureQuality)
+  - Brightness slider (bonus, via USB path)
+- 💤 HDR toggle — defer until niri HDR support ships
+- 💤 KVM config (which video input pairs with each USB upstream) — after basic toggle works
+
+### Key codes (from monctl + community RE)
+
+| Feature | Code | Values |
+|---|---|---|
+| Brightness | `[0x10, 0x00]` | 0–100 |
+| Overdrive | `[0xe0, 0x02]` | 0=Off, 1=Normal, 2=Speed, 3=PictureQuality |
+| KVM switch | `[0xe0, 0x69]` | 0=USB-B, 1=USB-C |
+| Input source | `[0xe0, 0x60]` | 1=HDMI1, 2=HDMI2, 3=DP, 4=USB-C |
+| KVM config B | `[0xe0, 0x6a]` | video input paired with USB-B |
+| KVM config C | `[0xe0, 0x6b]` | video input paired with USB-C |
+
+---
+
+## Phase 2b — Extended features
 *Future, no active tasks.*
 
-- 💤 Display panel (refresh rate profiles, per-output)
 - 💤 Group switcher UI (bar left zone, workspace groups)
 - 💤 Notification system (full spec needed — popup, history panel, DND)
 - 💤 KDE Connect panel (placeholder slot reserved)
@@ -149,5 +211,8 @@ working and committed. Future improvements:
 | Tray overflow threshold | Needs real-world tuning |
 | Center zone panel | Spec needed alongside notification system |
 | KDE Connect | Placeholder reserved, implementation separate |
-| Group switcher UI | Phase 2 workspace design |
+| Group switcher UI | Phase 2b workspace design |
 | gengir improvements | Stale upstream; manual stub patches may be needed |
+| Gigabyte HDR toggle | Deferred — blocked on niri HDR support |
+| OSD game inhibit | Deferred — theoretical until tested; check fullscreen output |
+| Keyboard layout OSD | Deferred — needs NiriKbdService |
