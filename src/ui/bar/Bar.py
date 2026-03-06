@@ -9,6 +9,7 @@ from gi.repository import (
     AstalBattery,
     AstalWp,
     AstalNetwork,
+    AstalMpris,
     AstalPowerProfiles,
     AstalTray,
     AstalBluetooth,

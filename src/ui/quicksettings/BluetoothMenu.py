@@ -8,7 +8,6 @@ from gi.repository import (
 )
 
 from ui.quicksettings.BluetoothDevice import BluetoothDevice
-from ui.quicksettings.FavoriteButton import FavoriteButton
 from utils import Blueprint
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
@@ -26,9 +25,10 @@ class BluetoothMenu(Gtk.Box):
     header = Gtk.Template.Child()
     expand = Gtk.Template.Child()
     
+    favorites = {}
+    
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.favorites: dict = {}
         
         self.settings = Gio.Settings.new("com.github.jarek102.py-desktop")
         self.favorites_store = set(self.settings.get_strv("bluetooth-favorites"))
@@ -44,19 +44,21 @@ class BluetoothMenu(Gtk.Box):
                 bt_device.favorite = True
             
         self.bluetooth.bind_property("is-powered", self.toggle, "active", SYNC)
-
-    def make_favorite(self, bt_device: BluetoothDevice, _data=None) -> None:
+    def make_favorite(self, bt_device : BluetoothDevice, _data = None):
         address = bt_device.device.props.address
         if bt_device.favorite:
-            favorite_button = FavoriteButton(bt_device)
-            self.favorites[bt_device] = favorite_button
-            self.header.insert_child_after(favorite_button, self.toggle)
+            button = Gtk.ToggleButton(icon_name=bt_device.icon)
+            button.connect("clicked", lambda _button: bt_device.device_clicked())
+            # Bind the device's connected state straight to the button's active state
+            bt_device.device.bind_property("connected", button, "active", SYNC)
+            self.favorites[bt_device] = button
+            self.header.insert_child_after(button,self.toggle)
             self.favorites_store.add(address)
         else:
-            button = self.favorites.pop(bt_device, None)
-            if button is not None:
-                self.header.remove(button)
-            self.favorites_store.discard(address)
+            self.header.remove(self.favorites[bt_device])
+            self.favorites.pop(bt_device)
+            if address in self.favorites_store:
+                self.favorites_store.remove(address)
         self.settings.set_strv("bluetooth-favorites", list(self.favorites_store))
             
     @Gtk.Template.Callback()
