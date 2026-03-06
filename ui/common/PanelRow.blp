@@ -1,0 +1,52 @@
+using Gtk 4.0;
+
+template $PanelRow: Box {
+    orientation: vertical;
+
+    Box header_box {
+        styles ["panel-header"]
+
+        Button icon_button {
+            styles ["fixed-icon"]
+            icon-name: bind template.icon-name;
+            clicked => $on_icon_clicked();
+        }
+
+        // content_box: child widgets placed here via [content] slot
+        Box content_box {
+            hexpand: true;
+            valign: center;
+        }
+
+        ToggleButton toggle_button {
+            visible: bind template.toggle-visible;
+            active: bind template.toggle-active bidirectional;
+            clicked => $on_toggle_clicked();
+        }
+
+        Button chevron_button {
+            styles ["fixed-icon"]
+            visible: bind template.chevron-visible;
+            icon-name: bind template.chevron-icon;
+            clicked => $on_chevron_clicked();
+        }
+    }
+
+    Label caption_label {
+        styles ["caption"]
+        label: bind template.caption;
+        visible: bind template.caption-visible;
+        halign: start;
+        ellipsize: end;
+        max-width-chars: 40;
+    }
+
+    // revealer_box: child widgets placed here via [revealer] slot
+    Revealer revealer {
+        reveal-child: false;
+
+        Box revealer_box {
+            orientation: vertical;
+        }
+    }
+}

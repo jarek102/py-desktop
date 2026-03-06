@@ -64,7 +64,24 @@ class App(Astal.Application):
             organizer = WindowOrganizer(rules_path_override=self._window_rules_override)
             # organizer_ref held on self to prevent GC while app is running.
             self._window_organizer = organizer
+
+        self._setup_osd()
         
+    def _setup_osd(self):
+        if hasattr(self, '_osd_window'):
+            return
+        from services.osd_service import OsdService
+        from ui.osd.OsdWindow import OsdWindow
+
+        osd_service = OsdService.get_default()
+        self._osd_window = OsdWindow()
+        self.add_window(self._osd_window)
+
+        # Volume/mute OSD — connects to WirePlumber default speaker.
+        # Brightness OSD — BrightnessService is now a singleton; wire it in.
+        from services.BrightnessService import BrightnessService
+        osd_service.start(brightness_service=BrightnessService.get_default())
+
     def _ensure_overlays(self):
         if not self.overlays:
             for mon in self.get_monitors():  # type: ignore[reportGeneralTypeIssues]

@@ -316,6 +316,44 @@ $panel-bg-opacity:    0.92;   // not directly used in CSS — documented intent
  }
 
  // ==============================================
+ //    OSD (On-Screen Display)
+ // ==============================================
+ .osd-window {
+     background-color: transparent;
+ }
+
+ .osd-pill {
+     background-color: $card-bg;
+     border-radius: $radius-pill;
+     padding: $spacing 24px;
+     min-width: 240px;
+     min-height: 40px;
+     box-shadow: $shadow-md;
+
+     levelbar trough {
+         border-radius: $radius-pill;
+         min-height: 8px;
+         min-width: 140px;
+     }
+
+     levelbar block.filled {
+         border-radius: $radius-pill;
+         background-color: $accent;
+     }
+
+     levelbar block.empty {
+         border-radius: $radius-pill;
+         background-color: $hover-bg;
+     }
+ }
+
+ .osd-label {
+     color: $dim-label;
+     font-size: 13px;
+     font-variant-numeric: tabular-nums;
+ }
+
+ // ==============================================
  //    THEME OVERRIDES
  // ==============================================
  @import "themes/lavanda";

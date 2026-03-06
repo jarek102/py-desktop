@@ -1,0 +1,36 @@
+using Gtk 4.0;
+using Astal 4.0;
+
+template $OsdWindow: Astal.Window {
+    styles ["osd-window"]
+    anchor: bottom;
+    exclusivity: ignore;
+    layer: overlay;
+    keymode: none;
+
+    Box {
+        styles ["osd-pill"]
+        spacing: 12;
+        halign: center;
+        valign: center;
+
+        Image {
+            icon-name: bind template.icon;
+            pixel-size: 20;
+        }
+
+        LevelBar level_bar {
+            min-value: 0;
+            max-value: 1.0;
+            value: bind template.value;
+            hexpand: true;
+        }
+
+        Label {
+            styles ["osd-label"]
+            label: bind template.label;
+            width-chars: 5;
+            xalign: 1;
+        }
+    }
+}
