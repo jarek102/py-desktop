@@ -307,15 +307,17 @@ class Compositor(GObject.GObject):
         self._niri: Optional[AstalNiri.Niri] = None
         self._scroll: Optional[ScrollIPC] = None
         self._gdk_display = Gdk.Display.get_default()
-        self._monitor_manager = None
+        self._monitor_manager: MonitorManager  # always set before __init__ returns
         
         self._workspaces = []
         
         if "hyprland" in self._desktop:
             self._hyprland = AstalHyprland.get_default()
+            assert self._hyprland is not None
             self._hyprland.connect("notify::workspaces", self._sync_hyprland_workspaces)
         elif "niri" in self._desktop:
             self._niri = AstalNiri.get_default()
+            assert self._niri is not None
             self._niri.connect("notify::workspaces", self._sync_niri_workspaces)
         elif "scroll" in self._desktop:
             self._scroll = ScrollIPC()
@@ -399,7 +401,7 @@ class Compositor(GObject.GObject):
             try:
                 # Use GLib.Variant for int64 as per our fix in AstalNiri
                 v_delay = GLib.Variant('x', delay_ms)
-                AstalNiri.msg.do_screen_transition(v_delay)
+                AstalNiri.msg.do_screen_transition(v_delay)  # type: ignore[reportAttributeAccessIssue]
             except Exception as e:
                 _log.warning(f"Failed to trigger Niri screen transition: {e}")
 
@@ -407,7 +409,7 @@ class Compositor(GObject.GObject):
         if self.is_hyprland and self._hyprland is not None:
              self._hyprland.dispatch("exit", "")
         elif self.is_niri:
-             AstalNiri.msg.quit(True)
+             AstalNiri.msg.quit(True)  # type: ignore[reportAttributeAccessIssue]
         elif self.is_scroll:
              if self._scroll is not None:
                  self._scroll.stop_event_monitor()
@@ -415,8 +417,9 @@ class Compositor(GObject.GObject):
 
     def _sync_hyprland_workspaces(self, *args):
         _log.info("Sync hyprland workspaces")
+        assert self._hyprland is not None
         ws_list = []
-        for h_ws in sorted(self._hyprland.props.workspaces, key=lambda w: w.props.id):
+        for h_ws in sorted(self._hyprland.get_workspaces(), key=lambda w: w.props.id):  # type: ignore[reportGeneralTypeIssues]
             if h_ws.props.id >= 0:
                 ws_list.append(Workspace(h_ws, "hyprland"))
         
@@ -426,8 +429,9 @@ class Compositor(GObject.GObject):
 
     def _sync_niri_workspaces(self, *args):
         _log.info("Sync niri workspaces")
+        assert self._niri is not None
         ws_list = []
-        for n_ws in self._niri.get_workspaces():
+        for n_ws in self._niri.get_workspaces():  # type: ignore[reportOptionalMemberAccess,reportGeneralTypeIssues]
             ws_list.append(Workspace(n_ws, "niri"))
             
         self._workspaces = sorted(ws_list, key=lambda w: w.id if isinstance(w.id, int) else str(w.id))

@@ -8,4 +8,4 @@ class PopupWindow:
     Click-outside handling is managed by App overlays.
     """
     def setup_popup(self):
-        self.set_layer(Astal.Layer.OVERLAY)
+        self.set_layer(Astal.Layer.OVERLAY)  # type: ignore[reportAttributeAccessIssue]

@@ -5,7 +5,7 @@ from gi.repository import Gtk
 PROJECT_ROOT = pathlib.Path(__file__).parent.parent.parent
 GENERATED_DIR = PROJECT_ROOT / "generated" / "ui"
 
-def Blueprint(ui_file: str = None):
+def Blueprint(ui_file: str | None = None):
     def decorator(cls):
         nonlocal ui_file
         if ui_file is None:

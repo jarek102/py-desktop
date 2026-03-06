@@ -39,7 +39,7 @@ class App(Astal.Application):
     def _on_theme_family_changed(self, *_args):
         new_class = f"theme-{self.theme_service.theme_family}"
         if self.current_theme_class != new_class:
-            for win in self.get_windows():
+            for win in self.get_windows():  # type: ignore[reportGeneralTypeIssues]
                 win.remove_css_class(self.current_theme_class)
                 win.add_css_class(new_class)
             self.current_theme_class = new_class
@@ -50,7 +50,7 @@ class App(Astal.Application):
     def on_activate(self,_):
         self.apply_css(CSS_FILE.as_posix(), True)
         if not self.bars:
-            for mon in self.get_monitors():
+            for mon in self.get_monitors():  # type: ignore[reportGeneralTypeIssues]
                 self.bars[mon] = Bar(gdkmonitor=mon,window_manager=self)
                 self.add_window(self.bars[mon])
         for bar in self.bars.values():
@@ -67,7 +67,7 @@ class App(Astal.Application):
         
     def _ensure_overlays(self):
         if not self.overlays:
-            for mon in self.get_monitors():
+            for mon in self.get_monitors():  # type: ignore[reportGeneralTypeIssues]
                 self.overlays[mon] = Overlay(self.close_popups, gdkmonitor=mon)
                 self.add_window(self.overlays[mon])
 
@@ -113,7 +113,7 @@ class App(Astal.Application):
 
         if request == "status":
             payload = {
-                "instance_name": self.props.instance_name,
+                "instance_name": self.props.instance_name,  # type: ignore[reportAttributeAccessIssue]
                 "bars": len(self.bars),
                 "overlays": len(self.overlays),
                 "popup_open": self.active_popup is not None,

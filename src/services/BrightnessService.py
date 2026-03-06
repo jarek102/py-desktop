@@ -180,6 +180,7 @@ class BrightnessService(GObject.Object):
             self.busy = False
         
     async def read_brightness(self, bus_id) -> int | None:
+        proc = None
         try:
             # Short timeout for reading
             proc = await asyncio.create_subprocess_exec(
@@ -198,8 +199,9 @@ class BrightnessService(GObject.Object):
                 
         except asyncio.TimeoutError:
             logger.warning(f"Timeout reading brightness from bus {bus_id}")
-            try: proc.kill()
-            except: pass
+            if proc is not None:
+                try: proc.kill()
+                except: pass
         except Exception as e:
             logger.warning(f"Error reading bus {bus_id}: {e}")
         return None
@@ -208,6 +210,7 @@ class BrightnessService(GObject.Object):
         # RETRY LOOP: Try up to 3 times to coerce the monitor
         max_retries = 3
         for attempt in range(1, max_retries + 1):
+            proc = None
             try:
                 # 1. Write the value
                 proc = await asyncio.create_subprocess_exec(
@@ -233,8 +236,9 @@ class BrightnessService(GObject.Object):
                 
             except asyncio.TimeoutError:
                 logger.warning(f"Bus {bus_id}: Write timeout on attempt {attempt}")
-                try: proc.kill()
-                except: pass
+                if proc is not None:
+                    try: proc.kill()
+                    except: pass
             except Exception as e:
                 logger.warning(f"Bus {bus_id}: Write error: {e}")
                 

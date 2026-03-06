@@ -50,15 +50,15 @@ class ThemeService(GObject.Object):
         self._sync_theme_family()
 
     @GObject.Property(type=str, default="default")
-    def theme_family(self):
+    def theme_family(self) -> str:  # type: ignore[reportRedeclaration]
         return self._theme_family
-        
+
     @theme_family.setter
     def theme_family(self, value: str):
         self._theme_family = value
 
     @GObject.Property(type=bool, default=False)
-    def is_dark(self):
+    def is_dark(self) -> bool:  # type: ignore[reportRedeclaration]
         return self._is_dark
 
     @is_dark.setter

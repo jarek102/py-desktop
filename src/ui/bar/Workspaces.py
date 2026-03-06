@@ -91,7 +91,7 @@ class Workspaces(Gtk.Box):
             _log.warning("Workspaces update skipped: root has no get_monitor()")
             return
 
-        gdk_monitor_id = root.get_monitor()
+        gdk_monitor_id = root.get_monitor()  # type: ignore[reportAttributeAccessIssue]
         _log.debug("Workspaces changed gdk_monitor_id=%s", gdk_monitor_id)
 
         # Clear existing children
@@ -123,7 +123,7 @@ class Workspaces(Gtk.Box):
             return
 
         workspaces = self.compositor.get_workspaces_for_monitor(
-            gdk_id=root.get_monitor()
+            gdk_id=root.get_monitor()  # type: ignore[reportAttributeAccessIssue]
         )
         if not workspaces:
             return

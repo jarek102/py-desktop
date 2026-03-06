@@ -48,7 +48,7 @@ class Bar(Astal.Window):
         self.window_manager = window_manager
 
         # clock
-        timer = AstalIO.Time.interval(1000, self.set_clock)
+        timer = AstalIO.Time.interval(1000, self.set_clock)  # type: ignore[reportAttributeAccessIssue]
         self.connect("destroy", lambda _: timer.cancel())
 
         # everytime popover is opened, select current day
@@ -163,7 +163,8 @@ class Bar(Astal.Window):
                 return "network-idle-symbolic"
 
     def set_clock(self):
-        self.clock = GLib.DateTime.new_now_local().format("%H:%M")
+        dt = GLib.DateTime.new_now_local()
+        self.clock = dt.format("%H:%M") if dt is not None else "--:--"
 
     @Gtk.Template.Callback()
     def menu_clicked(self, _) -> None:

@@ -53,7 +53,7 @@ class WindowOrganizer(GObject.Object):
 
         # Note: 'msg' is lowercase intentionally — this matches the AstalNiri Vala class name.
         self._niri_msg = AstalNiri.msg.new()
-        self._niri_state = AstalNiri.Niri.get_default()
+        self._niri_state = AstalNiri.get_default()
 
         self._rules_path_override = rules_path_override
 
@@ -167,7 +167,7 @@ class WindowOrganizer(GObject.Object):
             self._processed_window_ids.clear()
             return
 
-        current_window_ids = {win.get_id() for win in current_windows}
+        current_window_ids = {win.get_id() for win in current_windows}  # type: ignore[reportGeneralTypeIssues]
 
         # Clean up closed windows
         closed_ids = self._processed_window_ids - current_window_ids
@@ -188,7 +188,7 @@ class WindowOrganizer(GObject.Object):
         # Process new windows
         new_windows = [
             win
-            for win in current_windows
+            for win in current_windows  # type: ignore[reportGeneralTypeIssues]
             if win.get_id() not in self._processed_window_ids
         ]
 
@@ -295,20 +295,20 @@ class WindowOrganizer(GObject.Object):
         )
 
         if should_move:
-            self._niri_msg.move_window_to_workspace_by_name(
+            self._niri_msg.move_window_to_workspace_by_name(  # type: ignore[reportAttributeAccessIssue]
                 window_id=GLib.Variant.new_int64(win_id),
                 workspace_name=rule.workspace,
                 focus=False,
             )
 
         if should_maximize:
-            result = self._niri_msg.set_window_width_set_proportion(
+            result = self._niri_msg.set_window_width_set_proportion(  # type: ignore[reportAttributeAccessIssue]
                 GLib.Variant.new_int64(win_id), 100.0
             )
             logger.debug("WindowOrganizer: maximize result: %s", result)
 
         if should_fullscreen:
-            result = self._niri_msg.fullscreen_window(GLib.Variant.new_int64(win_id))
+            result = self._niri_msg.fullscreen_window(GLib.Variant.new_int64(win_id))  # type: ignore[reportAttributeAccessIssue]
             logger.debug("WindowOrganizer: fullscreen result: %s", result)
 
         if target_width:
@@ -324,7 +324,7 @@ class WindowOrganizer(GObject.Object):
                 and window_ws is not None
                 and focused_ws.get_id() == window_ws.get_id()
             ):
-                result = self._niri_msg.focus_window(GLib.Variant.new_int64(win_id))
+                result = self._niri_msg.focus_window(GLib.Variant.new_int64(win_id))  # type: ignore[reportAttributeAccessIssue]
                 logger.debug("WindowOrganizer: focus result: %s", result)
 
         return True
@@ -334,12 +334,12 @@ class WindowOrganizer(GObject.Object):
             match target_width["type"]:
                 case "proportion":
                     percent = float(target_width["value"]) * 100.0
-                    result = self._niri_msg.set_window_width_set_proportion(
+                    result = self._niri_msg.set_window_width_set_proportion(  # type: ignore[reportAttributeAccessIssue]
                         GLib.Variant.new_int64(win_id), percent
                     )
                     logger.debug("WindowOrganizer: set width proportion result: %s", result)
                 case "fixed":
-                    result = self._niri_msg.set_window_width_set_fixed(
+                    result = self._niri_msg.set_window_width_set_fixed(  # type: ignore[reportAttributeAccessIssue]
                         GLib.Variant.new_int64(win_id), int(target_width["value"])
                     )
                     logger.debug("WindowOrganizer: set width fixed result: %s", result)

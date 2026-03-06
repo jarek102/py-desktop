@@ -66,7 +66,7 @@ def parse_rules_from_file(path: str) -> list[WindowRule]:
 
     try:
         with open(path, "r", encoding="utf-8") as file_obj:
-            doc = kdl.parse(file_obj.read())
+            doc = kdl.parse(file_obj.read())  # type: ignore[reportPrivateImportUsage]
     except Exception as exc:
         logger.error("Failed to parse KDL file %s: %s", path, exc)
         return rules

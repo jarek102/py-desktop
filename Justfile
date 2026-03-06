@@ -41,6 +41,10 @@ check:
     python3 -m compileall -q {{src_dir}}
     just test
 
+# Type-check with basedpyright (informational — stub gaps produce false positives)
+typecheck:
+    basedpyright {{src_dir}}
+
 # Nested compositor development helpers
 smoke-niri:
     ./scripts/run-niri-nested.sh

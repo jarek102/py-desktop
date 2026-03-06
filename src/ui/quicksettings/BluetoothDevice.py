@@ -55,13 +55,13 @@ class BluetoothDevice(Gtk.Box):
         self.device.cancel_pairing()
                 
     def device_active(self, _obj = None, _data = None):
-        if self.device.props.connected:
+        if self.device.props.connected:  # type: ignore[reportAttributeAccessIssue]
             self.get_style_context().add_class("active")
         else:
             self.get_style_context().remove_class("active")
 
     def device_clicked(self, _count = None, _x = None, _y = None, _ = None) -> None:
-        if self.device.props.connected:
+        if self.device.props.connected:  # type: ignore[reportAttributeAccessIssue]
             self.device.disconnect_device()
         else:
             self.device.connect_device()
