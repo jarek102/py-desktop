@@ -1,0 +1,6 @@
+using Gtk 4.0;
+
+template $FavoriteButton: ToggleButton {
+    icon-name: bind template.icon_name;
+    clicked => $on_clicked();
+}
