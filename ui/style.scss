@@ -1,20 +1,72 @@
- @use "sass:string";
+@use "sass:string";
 
- // --- Theme Variables ---
- $bg: string.unquote(" @window_bg_color");
- $fg: string.unquote(" @window_fg_color");
- $accent: string.unquote(" @accent_color");
- $popover-bg: string.unquote(" @popover_bg_color");
+// ==============================================
+//    DESIGN TOKENS
+// ==============================================
 
- // --- Derived Variables ---
- $hover: string.unquote("alpha(#{$fg}, 0.08)");
- $active: string.unquote("alpha(#{$fg}, 0.12)");
- $border: string.unquote("alpha(#{$fg}, 0.15)");
+// --- Libadwaita Color Tokens ---
+// These map to GTK theme color variables. Never use hex colors elsewhere.
+$bg:              string.unquote("@window_bg_color");
+$fg:              string.unquote("@window_fg_color");
+$accent:          string.unquote("@accent_color");
+$accent-bg:       string.unquote("@accent_bg_color");
+$accent-fg:       string.unquote("@accent_fg_color");
+$card-bg:         string.unquote("@card_bg_color");
+$popover-bg:      string.unquote("@popover_bg_color");
+$headerbar-bg:    string.unquote("@headerbar_bg_color");
+$warning-color:   string.unquote("@warning_color");
+$error-bg:        string.unquote("@error_bg_color");
+$dim-label:       string.unquote("@dim_label_color");
+$borders:         string.unquote("@borders");
 
- $radius: 12px;
- $radius-sm: 8px;
- $radius-pill: 99px;
- $spacing: 12px;
+// --- Semantic Interaction Colors ---
+// Named by intent, not by alpha value. Use these instead of inline alpha().
+$hover-bg:        string.unquote("alpha(@window_fg_color, 0.08)");
+$active-bg:       string.unquote("alpha(@window_fg_color, 0.12)");
+$border-color:    string.unquote("alpha(@window_fg_color, 0.15)");
+$text-dim:        string.unquote("alpha(@window_fg_color, 0.6)");
+$overlay-bg:      string.unquote("alpha(@window_bg_color, 0.3)");
+
+// --- Elevation (box shadows) ---
+// Use named shadow variables, not inline rgba().
+$shadow-sm:       string.unquote("0 2px 5px alpha(black, 0.2)");
+$shadow-md:       string.unquote("0 4px 15px alpha(black, 0.5)");
+
+// --- Geometry ---
+$panel-width:     456px;   // 6 × 64px tiles + 5 × 8px gaps + 2 × 16px padding
+$tile-size:       64px;    // toggle grid cells, square
+$tile-gap:        8px;     // gutter between tiles
+$bar-height:      36px;
+$pill-height:     28px;    // clock-pill and system-pill min-height
+$panel-header-h:  44px;    // PanelRow header min-height (touch target)
+
+// --- Radii ---
+$radius:          12px;    // panels, cards, DeviceMenu window
+$radius-sm:       8px;     // items within panels, rows
+$radius-xs:       4px;     // small elements (tray buttons, calendar selected)
+$radius-pill:     99px;    // pills, OSD, workspace active dot
+$radius-tile:     10px;    // toggle tiles (future use)
+
+// --- Spacing ---
+$spacing:         12px;    // primary unit — matches $section-gap
+$spacing-sm:      6px;     // compact groups
+$spacing-xs:      4px;     // inline icon/label gaps, button padding
+
+// --- Transitions ---
+$transition-fast: string.unquote("background-color 0.2s");
+$transition-ws:   string.unquote("all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)");
+
+// --- Workspace dots ---
+$ws-dot-size:         12px;
+$ws-dot-hover-width:  16px;
+$ws-dot-active-width: 32px;
+
+// --- Blur readiness ---
+// Backgrounds use semi-transparent tokens. When niri blur is enabled,
+// reduce these opacities or set to transparent in a theme override.
+// TODO: add niri window-rule blur block to rules.kdl when niri blur releases.
+$bar-bg-opacity:      0.85;   // not directly used in CSS — documented intent
+$panel-bg-opacity:    0.92;   // not directly used in CSS — documented intent
 
  // ==============================================
  //    RESET & UTILITIES
@@ -44,16 +96,16 @@
      // This fixes the "Reverse Tree" look.
      padding: 8px 12px 8px 20px;
      border-radius: $radius-sm;
-     transition: background-color 0.2s;
+     transition: $transition-fast;
 
      &:hover {
-         background-color: $hover;
+         background-color: $hover-bg;
      }
 
      // Unified Active State
      &:checked,
      &.active {
-         background-color: $active;
+         background-color: $active-bg;
          color: $accent;
 
          image,
@@ -63,11 +115,11 @@
      }
 
      button {
-         padding: 4px;
+         padding: $spacing-xs;
          border-radius: $radius-sm;
 
          &:hover {
-             background-color: string.unquote("alpha(#{$fg}, 0.1)");
+             background-color: $hover-bg;
          }
      }
  }
@@ -80,12 +132,12 @@
      padding: 8px 12px 8px 20px; // Match .item padding
 
      &:checked {
-         background-color: $active;
+         background-color: $active-bg;
          color: $accent;
      }
 
      &:hover {
-         background-color: $hover;
+         background-color: $hover-bg;
      }
  }
 
@@ -93,15 +145,15 @@
  .panel-header {
      margin: 4px 8px;
      border-radius: $radius-sm;
-     transition: background-color 0.2s;
-     min-height: 40px;
+     transition: $transition-fast;
+     min-height: $panel-header-h;
 
      &:hover {
-         background-color: $hover;
+         background-color: $hover-bg;
      }
 
      >button {
-         padding: 4px;
+         padding: $spacing-xs;
          border-radius: $radius-sm;
          margin-right: 8px;
 
@@ -121,21 +173,24 @@
      margin-bottom: $spacing;
 
      button {
-         padding: 12px;
+         padding: $spacing;
          border-radius: $radius-sm;
          transition: all 0.2s;
 
          &:hover {
-             background-color: $active;
+             background-color: $active-bg;
              color: $accent;
          }
      }
  }
 
  // --- Captions (Labels below headers) ---
+ // FIXME: layout hack — negative margin aligns caption text with slider content.
+ // Magic number 76px = icon button width + margins. Replace with Grid layout
+ // in VolumeMenu.blp (tracked in Phase 1 UI work).
  .caption {
      font-size: 0.9em;
-     color: string.unquote("alpha(#{$fg}, 0.6)");
+     color: $text-dim;
      margin-top: -16px;
      margin-left: 76px; // Align with general text flow
  }
@@ -153,7 +208,7 @@
          border-radius: $radius;
          padding: $spacing;
          margin: $spacing;
-         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+         box-shadow: $shadow-md;
      }
  }
 
@@ -164,7 +219,7 @@
      .module {
          background-color: $bg;
          border-radius: $radius;
-         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+         box-shadow: $shadow-sm;
          padding: 4px 8px;
          margin: $spacing 0;
 
@@ -180,22 +235,22 @@
      .clock-pill,
      .system-pill {
          padding: 0 12px;
-         min-height: 28px;
+         min-height: $pill-height;
          border-radius: $radius-pill;
          font-weight: bold;
-         transition: background-color 0.2s;
+         transition: $transition-fast;
 
          &:hover {
-             background-color: $hover;
+             background-color: $hover-bg;
          }
      }
 
      .tray button {
-         padding: 4px;
-         border-radius: 4px;
+         padding: $spacing-xs;
+         border-radius: $radius-xs;
 
          &:hover {
-             background-color: $hover;
+             background-color: $hover-bg;
          }
      }
 
@@ -205,13 +260,13 @@
      }
 
      .workspace-button.dot {
-         min-width: 12px;
-         min-height: 12px;
+         min-width: $ws-dot-size;
+         min-height: $ws-dot-size;
          padding: 0;
-         margin: 0 4px;
+         margin: 0 $spacing-xs;
          border-radius: 999px;
          background-color: string.unquote("alpha(#{$fg}, 0.2)");
-         transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+         transition: $transition-ws;
 
          label {
              font-size: 0;
@@ -221,11 +276,11 @@
 
          &:hover {
              background-color: string.unquote("alpha(#{$fg}, 0.5)");
-             min-width: 16px;
+             min-width: $ws-dot-hover-width;
          }
 
          &.active {
-             min-width: 32px;
+             min-width: $ws-dot-active-width;
              background-color: $accent;
              color: $bg;
          }
@@ -243,7 +298,7 @@
 
      &:selected {
          background-color: $accent;
-         border-radius: 4px;
+         border-radius: $radius-xs;
          color: $bg;
      }
  }
@@ -253,11 +308,11 @@
      color: $fg;
      border-radius: $radius;
      padding: $spacing;
-     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+     box-shadow: $shadow-md;
  }
 
  .overlay {
-     background-color: string.unquote("alpha(#{$bg}, 0.3)");
+     background-color: $overlay-bg;
  }
 
  // ==============================================

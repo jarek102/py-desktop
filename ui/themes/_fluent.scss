@@ -9,7 +9,7 @@ window.theme-fluent {
     .menu-content,
     .module,
     popover>contents {
-        border-radius: 4px;
+        border-radius: $radius-xs;
     }
 
     .item,
@@ -17,37 +17,37 @@ window.theme-fluent {
     .panel-header>button,
     .power-grid button,
     .tray button {
-        border-radius: 2px;
+        border-radius: calc($radius-xs / 2);
     }
 
     .panel-header {
-        border-radius: 2px;
+        border-radius: calc($radius-xs / 2);
     }
 
     .clock-pill,
     .system-pill {
-        border-radius: 4px;
+        border-radius: $radius-xs;
     }
 
     window.bar {
         .workspace-button.dot {
-            border-radius: 2px;
+            border-radius: calc($radius-xs / 2);
 
             &:hover {
-                min-width: 16px;
-                border-radius: 2px;
+                min-width: $ws-dot-hover-width;
+                border-radius: calc($radius-xs / 2);
             }
 
             &.active {
-                min-width: 32px;
-                border-radius: 2px;
+                min-width: $ws-dot-active-width;
+                border-radius: calc($radius-xs / 2);
             }
         }
     }
 
     calendar {
         &:selected {
-            border-radius: 2px;
+            border-radius: calc($radius-xs / 2);
         }
     }
 }
