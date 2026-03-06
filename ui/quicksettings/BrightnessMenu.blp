@@ -1,58 +1,33 @@
 using Gtk 4.0;
 
-template $BrightnessMenu : Box {
-    orientation: vertical;
+template $BrightnessMenu: $PanelRow {
 
-    Box header {
-        styles ["panel-header"]
+    Scale slider {
+        hexpand: true;
+        valign: center;
+        draw-value: false;
 
-        Button icon {
-            styles ["fixed-icon"]
-            icon-name: bind template.icon_name;
-            sensitive: false;
-        }
+        adjustment: Adjustment {
+            lower: 0;
+            upper: 100;
+            step-increment: 10;
+            page-increment: 10;
+            value: bind template.value bidirectional;
+        };
 
-        Scale slider {
-            hexpand: true;
-            valign: center;
-            draw-value: false;
-
-            adjustment: Adjustment {
-                lower: 0;
-                upper: 100;
-                step-increment: 10;
-                page-increment: 10;
-                value: bind template.value bidirectional;
-            };
-
-            marks [
-                mark (0, bottom),
-                mark (1, bottom),
-                mark (10, bottom),
-                mark (20, bottom),
-                mark (30, bottom),
-                mark (40, bottom),
-                mark (50, bottom),
-                mark (60, bottom),
-                mark (70, bottom),
-                mark (80, bottom),
-                mark (90, bottom),
-                mark (100, bottom)
-            ]
-        }
-
-        Button expand {
-            styles ["fixed-icon"]
-            icon-name: "go-down-symbolic";
-            clicked => $toggle_reveal();
-        }
-    }
-
-    Revealer revealer {
-        reveal-child: false;
-        
-        Box device_list {
-            orientation: vertical;
-        }
+        marks [
+            mark (0, bottom),
+            mark (1, bottom),
+            mark (10, bottom),
+            mark (20, bottom),
+            mark (30, bottom),
+            mark (40, bottom),
+            mark (50, bottom),
+            mark (60, bottom),
+            mark (70, bottom),
+            mark (80, bottom),
+            mark (90, bottom),
+            mark (100, bottom)
+        ]
     }
 }

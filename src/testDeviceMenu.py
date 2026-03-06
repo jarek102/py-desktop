@@ -7,9 +7,6 @@ import asyncio
 from gi.repository import Gtk, Astal, GLib
 
 from ui.quicksettings.DeviceMenu import DeviceMenu
-from ui.quicksettings.BrightnessMenu import BrightnessMenu
-from ui.quicksettings.VolumeMenu import VolumeMenu
-from ui.quicksettings.BluetoothMenu import BluetoothMenu
 
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 CSS_FILE = BASE_DIR / 'generated' / 'style.css'
@@ -29,6 +26,8 @@ class TestApp(Astal.Application):
         if CSS_FILE.exists():
             self.apply_css(CSS_FILE.as_posix(), True)
         
+        # Note: the screenshot tile will log an error if niri is not running.
+        # This is expected when running outside a compositor session.
         device_menu = DeviceMenu()
         win.set_child(device_menu)
         

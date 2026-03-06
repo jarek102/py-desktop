@@ -1,73 +1,62 @@
-import gi
-
-from gi.repository import (
-    Gtk,
-    GObject,
-    Gio,
-    AstalBluetooth as Bluetooth,
-)
-
+import versions
+from gi.repository import Gtk, GObject, Gio, AstalBluetooth as Bluetooth
 from ui.quicksettings.BluetoothDevice import BluetoothDevice
 from ui.quicksettings.FavoriteButton import FavoriteButton
-from utils import Blueprint
+from ui.common.PanelRow import PanelRow
 
 SYNC = GObject.BindingFlags.SYNC_CREATE
-BIDI = GObject.BindingFlags.BIDIRECTIONAL
 
-RW = GObject.ParamFlags.READWRITE
 
-@Blueprint("quicksettings/BluetoothMenu.blp")
-class BluetoothMenu(Gtk.Box):
-    __gtype_name__ = 'BluetoothMenu'
-    
-    revealer = Gtk.Template.Child()
-    devices = Gtk.Template.Child()
-    toggle = Gtk.Template.Child()
-    header = Gtk.Template.Child()
-    expand = Gtk.Template.Child()
-    
+class BluetoothMenu(PanelRow):
+    __gtype_name__ = "BluetoothMenu"
+
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.favorites: dict = {}
-        
+
+        self.icon_name = "bluetooth-active-symbolic"
+        self.toggle_icon_name = "bluetooth-active-symbolic"
+        self.toggle_visible = True
+        self.set_has_revealer(True)
+
         self.settings = Gio.Settings.new("com.github.jarek102.py-desktop")
         self.favorites_store = set(self.settings.get_strv("bluetooth-favorites"))
-        
-        self.bluetooth = Bluetooth.get_default()
-        
-        for device in self.bluetooth.get_devices():
-            bt_device = BluetoothDevice(device)
-            self.devices.append(bt_device)
-            bt_device.connect("notify::favorite",self.make_favorite)
-            
-            if bt_device.device.props.address in self.favorites_store:
-                bt_device.favorite = True
-            
-        self.bluetooth.bind_property("is-powered", self.toggle, "active", SYNC)
 
-    def make_favorite(self, bt_device: BluetoothDevice, _data=None) -> None:
+        self.bluetooth = Bluetooth.get_default()
+        self.bluetooth.bind_property("is-powered", self, "toggle_active", SYNC)
+
+        for device in self.bluetooth.get_devices():
+            self._add_device(device)
+
+        self.bluetooth.connect("device-added", self._on_device_added)
+
+    def _add_device(self, device: Bluetooth.Device) -> None:
+        bt_device = BluetoothDevice(device)
+        self.add_revealer_child(bt_device)
+        bt_device.connect("notify::favorite", self._on_make_favorite)
+        if bt_device.device.props.address in self.favorites_store:
+            bt_device.favorite = True
+
+    def _on_device_added(self, _bluetooth, device: Bluetooth.Device) -> None:
+        self._add_device(device)
+
+    def _on_make_favorite(
+        self, bt_device: BluetoothDevice, _data=None
+    ) -> None:
         address = bt_device.device.props.address
         if bt_device.favorite:
             favorite_button = FavoriteButton(bt_device)
             self.favorites[bt_device] = favorite_button
-            self.header.insert_child_after(favorite_button, self.toggle)
+            self.content_box.append(favorite_button)
             self.favorites_store.add(address)
         else:
             button = self.favorites.pop(bt_device, None)
             if button is not None:
-                self.header.remove(button)
+                self.content_box.remove(button)
             self.favorites_store.discard(address)
-        self.settings.set_strv("bluetooth-favorites", list(self.favorites_store))
-            
-    @Gtk.Template.Callback()
-    def bluetooth_toggle(self, *args) -> None:
+        self.settings.set_strv(
+            "bluetooth-favorites", list(self.favorites_store)
+        )
+
+    def on_toggle_clicked(self, _button: Gtk.ToggleButton) -> None:
         self.bluetooth.toggle()
-        
-    @Gtk.Template.Callback()
-    def toggle_reveal(self, *args) -> None:
-        reveal = self.revealer.get_reveal_child()
-        if reveal:
-            self.expand.set_icon_name("go-down-symbolic")
-        else:
-            self.expand.set_icon_name("go-up-symbolic")
-        self.revealer.set_reveal_child(not reveal)
