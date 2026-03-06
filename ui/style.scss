@@ -168,40 +168,6 @@ $panel-bg-opacity:    0.92;   // not directly used in CSS — documented intent
      }
  }
 
-// --- PanelRow widget (unified base for all DeviceMenu panels) ---
-.panel-row {
-    // Root container — no direct styles, children handle layout.
-}
-
-.panel-row-header {
-    margin: $spacing-xs $spacing-sm;
-    border-radius: $radius-sm;
-    transition: $transition-fast;
-    min-height: $panel-header-h;
-
-    &:hover {
-        background-color: $hover-bg;
-    }
-
-    > button,
-    > togglebutton {
-        padding: $spacing-xs;
-        border-radius: $radius-sm;
-
-        &:first-child {
-            margin-right: $spacing-sm;
-        }
-
-        &:last-child {
-            margin-left: $spacing-sm;
-        }
-    }
-
-    scale {
-        margin: 0 $spacing-sm;
-    }
-}
-
  // --- Power Grid (Shutdown, Logout) ---
  .power-grid {
      margin-bottom: $spacing;

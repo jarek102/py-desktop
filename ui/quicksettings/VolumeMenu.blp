@@ -1,16 +1,65 @@
 using Gtk 4.0;
 
-template $VolumeMenu: $PanelRow {
+template $VolumeMenu: Box {
+    orientation: vertical;
 
-    Scale slider {
-        hexpand: true;
-        valign: center;
-        draw-value: false;
+    Box header {
+        styles [
+            "panel-header",
+        ]
 
-        adjustment: Adjustment {
-            lower: 0;
-            upper: 1.0;
-            value: bind template.value bidirectional;
-        };
+        // 1. Icon (Fixed Width)
+        Button icon {
+            styles [
+                "fixed-icon",
+            ]
+
+            icon-name: bind template.icon_name;
+            clicked => $toggle_mute();
+        }
+
+        // 2. Slider (Centered in row)
+        Scale slider {
+            hexpand: true;
+            valign: center;
+            draw-value: false;
+
+            adjustment: Adjustment {
+                lower: 0;
+                upper: 1.0;
+                value: bind template.value bidirectional;
+            };
+        }
+
+        // 3. Expand Arrow (Fixed Width)
+        Button expand {
+            styles [
+                "fixed-icon",
+            ]
+
+            icon-name: "go-down-symbolic";
+            clicked => $toggle_reveal();
+        }
+    }
+
+    // Label moved back here (Subtle Caption)
+    Label {
+        styles [
+            "caption",
+        ]
+
+        label: bind template.active_device_label;
+        visible: bind revealer.child-revealed inverted;
+        halign: start;
+        ellipsize: end;
+        max-width-chars: 40;
+    }
+
+    Revealer revealer {
+        reveal-child: false;
+
+        Box device_list {
+            orientation: vertical;
+        }
     }
 }

@@ -1,4 +1,30 @@
 using Gtk 4.0;
 
-template $BluetoothMenu: $PanelRow {
+template $BluetoothMenu: Box {
+    orientation: vertical;
+
+    Box header {
+        styles [
+            "panel-header", "linked"
+        ]
+
+        ToggleButton toggle {
+            icon-name: "bluetooth-active-symbolic";
+            clicked => $bluetooth_toggle();
+            hexpand: true;
+        }
+
+        Button expand {
+            icon-name: "go-down-symbolic";
+            clicked => $toggle_reveal();
+        }
+    }
+
+    Revealer revealer {
+        reveal-child: false;
+
+        Box devices {
+            orientation: vertical;
+        }
+    }
 }
