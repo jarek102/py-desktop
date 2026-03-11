@@ -1,0 +1,38 @@
+using Gtk 4.0;
+
+template $BatteryDeviceItem: Box {
+    styles ["item"]
+
+    spacing: 12;
+
+    Image {
+        styles ["fixed-icon"]
+        icon-name: bind template.icon-name;
+        valign: center;
+    }
+
+    Label {
+        label: bind template.device-name;
+        hexpand: true;
+        halign: start;
+        ellipsize: end;
+        max-width-chars: 18;
+        valign: center;
+    }
+
+    LevelBar {
+        min-value: 0;
+        max-value: 1;
+        value: bind template.level;
+        valign: center;
+        width-request: 60;
+    }
+
+    Label {
+        styles ["dim-label"]
+        label: bind template.percentage-label;
+        width-chars: 4;
+        xalign: 1;
+        valign: center;
+    }
+}

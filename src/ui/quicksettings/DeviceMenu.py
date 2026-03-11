@@ -8,6 +8,9 @@ from ui.common.FeatureToggle import FeatureToggle
 from ui.quicksettings.BrightnessMenu import BrightnessMenu
 from ui.quicksettings.VolumeMenu import VolumeMenu
 from ui.quicksettings.BluetoothMenu import BluetoothMenu
+from ui.quicksettings.WiredMenu import WiredMenu  # noqa: F401 — registered for Blueprint
+from ui.quicksettings.WifiMenu import WifiMenu  # noqa: F401 — registered for Blueprint
+from ui.quicksettings.DevicesMenu import DevicesMenu  # noqa: F401 — registered for Blueprint
 from ui.common.PopupWindow import PopupWindow
 from utils import Blueprint
 from services.Compositor import Compositor

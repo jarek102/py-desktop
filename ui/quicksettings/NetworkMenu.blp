@@ -1,0 +1,11 @@
+using Gtk 4.0;
+
+template $NetworkMenu: Box {
+    orientation: vertical;
+
+    $PanelRow panel_row {
+        icon-name: bind template.icon-name;
+        toggle-visible: true;
+        caption-visible: false;
+    }
+}

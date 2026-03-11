@@ -1,0 +1,12 @@
+using Gtk 4.0;
+
+template $WiredMenu: Box {
+    orientation: vertical;
+
+    $PanelRow panel_row {
+        icon-name: bind template.icon-name;
+        toggle-visible: false;
+        caption-visible: false;
+        chevron-visible: false;
+    }
+}

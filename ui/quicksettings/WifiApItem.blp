@@ -1,0 +1,38 @@
+using Gtk 4.0;
+
+template $WifiApItem: ToggleButton {
+    styles ["item"]
+
+    active: bind template.is-active;
+
+    Box {
+        spacing: 0;
+
+        Image {
+            styles ["fixed-icon"]
+            icon-name: bind template.icon-name;
+        }
+
+        Label {
+            label: bind template.ssid;
+            hexpand: true;
+            halign: start;
+            ellipsize: end;
+            max-width-chars: 20;
+            margin-start: 12;
+        }
+
+        Image {
+            icon-name: "system-lock-screen-symbolic";
+            visible: bind template.requires-password;
+            margin-end: 4;
+        }
+
+        Label {
+            styles ["dim-label"]
+            label: bind template.strength-label;
+            width-chars: 4;
+            xalign: 1;
+        }
+    }
+}

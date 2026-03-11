@@ -126,11 +126,24 @@ timer reset on repeated triggers.
 ---
 
 ## Phase 1d — New DeviceMenu panels
-*After PanelRow exists (prerequisite met).*
+*Complete (HA panel deferred).*
 
-- ⏳ Devices panel — peripheral battery levels via UPower D-Bus
-- ⏳ Network panel — SSID + wifi toggle + AP list (display only first)
+- ✅ Network panel — wifi toggle + connection label + known AP list with connect support
+  - Shows wired info when ethernet is primary; hides when no hardware
+  - AP list filtered to saved (known) connections + hidden networks, sorted active-first
+  - `AstalNetwork.AccessPoint.activate()` for one-tap connect
+- ✅ Devices panel — peripheral battery levels via UPower D-Bus
+  - Filters out BATTERY/LINE_POWER/UPS/MONITOR; shows mouse, keyboard, headphones, etc.
+  - Header summary: device name (1), count (N+), "Low: name" (warning level)
+  - Signal cleanup on refresh (`disconnect_signals()` prevents Device→widget leaks)
 - 💤 HA panel — when configured, home-symbolic + light groups
+
+### Key implementation notes
+
+- Panel order in DeviceMenu: Brightness → Volume → Mic → Network → Bluetooth → Devices
+- `NetworkMenu._on_toggle` guards against feedback loop from bidirectional Blueprint binding
+- `BatteryDeviceItem.disconnect_signals()` called before removing items from revealer
+- `AstalBattery.UPower.new()` used (not `get_default()` — UPower has no singleton)
 
 ---
 
