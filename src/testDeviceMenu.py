@@ -46,6 +46,5 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    # Run with `PYTHONPATH=src python3 src/testDeviceMenu.py`
     app = TestApp(instance_name='py_desktop_test_device_menu')
     app.run([])
