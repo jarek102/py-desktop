@@ -66,14 +66,11 @@ class ThemeService(GObject.Object):
         self._is_dark = value
 
         color_scheme = self._settings.get_string("color-scheme")
-        current_is_settings_dark = color_scheme == "prefer-dark"
-        if value == current_is_settings_dark:
+        if value == (color_scheme == "prefer-dark"):
             return
 
         try:
             from services.Compositor import Compositor
-
-            _log.debug("Triggering Niri screen transition for theme switch")
             Compositor.get_default().do_screen_transition(500)
         except Exception as error:
             _log.warning(f"Failed to trigger screen transition: {error}")

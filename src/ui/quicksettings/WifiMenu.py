@@ -55,6 +55,8 @@ class WifiMenu(Gtk.Box):
         child = box.get_first_child()
         while child:
             nxt = child.get_next_sibling()
+            if isinstance(child, WifiApItem):
+                child.disconnect_signals()
             box.remove(child)
             child = nxt
 
@@ -65,13 +67,7 @@ class WifiMenu(Gtk.Box):
             return
 
         def _is_relevant(ap: AstalNetwork.AccessPoint) -> bool:
-            if not ap.get_ssid():
-                return True  # hidden network — always show
-            try:
-                conns = ap.get_connections()  # type: ignore[reportAttributeAccessIssue]
-                return bool(conns)
-            except Exception:
-                return False
+            return bool(ap.get_ssid())  # show all named APs; active shown first via sort
 
         def _sort_key(ap: AstalNetwork.AccessPoint):
             is_active = (

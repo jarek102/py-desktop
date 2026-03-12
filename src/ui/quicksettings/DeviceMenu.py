@@ -42,9 +42,6 @@ class DeviceMenu(Gtk.Box):
         self.theme_service.bind_property(
             "is_dark", self, "is_dark_mode", GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL
         )
-        
-        # Determine initial state
-        self.is_dark_mode = self.theme_service.is_dark
 
         # Bind power profile visibility
         self.power_profile_service.bind_property(
@@ -55,7 +52,7 @@ class DeviceMenu(Gtk.Box):
             "notify::active-profile", self._on_power_profile_changed
         )
         self._on_power_profile_changed()
-        
+
         self.audio_menu.setup("speaker")
         self.mic_menu.setup("microphone")
 

@@ -2,6 +2,7 @@ import pathlib
 import json
 
 from gi.repository import Astal, AstalNiri, Gio, AstalIO
+
 from ui.quicksettings.DeviceMenuWindow import DeviceMenuWindow
 from ui.bar.Bar import Bar
 from ui.common.Overlay import Overlay
